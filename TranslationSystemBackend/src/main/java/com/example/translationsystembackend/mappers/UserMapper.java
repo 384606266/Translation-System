@@ -17,8 +17,9 @@ public interface UserMapper {
     @Select("SELECT * FROM user WHERE username=#{username};")
     User getUserByUsername(@Param("username") String username);
 
-    @Update("UPDATE user SET username=#{username}, password_digest=#{password_digest}, status=#{status}, points=#{points}, created=#{created}, last_login=#{last_login}, token=#{token} WHERE username=#{old_username};")
-    void updateUserByUsername(@Param("username") String username, @Param("password_digest") byte[] passwordDigest, @Param("status") int status, @Param("points") int points, @Param("created") Date created, @Param("last_login") Date lastLogin, @Param("token") String token, @Param("old_username") String oldUsername);
+    // 不应该允许对用户名的修改
+    @Update("UPDATE user SET password_digest=#{password_digest}, status=#{status}, points=#{points}, created=#{created}, last_login=#{last_login}, token=#{token} WHERE username=#{username};")
+    void updateUserByUsername(@Param("password_digest") byte[] passwordDigest, @Param("status") int status, @Param("points") int points, @Param("created") Date created, @Param("last_login") Date lastLogin, @Param("token") String token, @Param("username") String username);
 
     @Update("UPDATE user SET last_login=#{last_login}, token=#{token} WHERE username=#{username};")
     void updateLoginInfoByUsername(@Param("last_login") Date lastLogin, @Param("token") String token, @Param("username") String username);

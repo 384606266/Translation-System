@@ -20,3 +20,13 @@ CREATE TABLE IF NOT EXISTS file
     PRIMARY KEY (id),
     FOREIGN KEY (user) REFERENCES user (username)
 );
+
+CREATE TABLE IF NOT EXISTS access
+(
+    username varchar(64)  NOT NULL,
+    id       int unsigned NOT NULL,
+    flag     char         NOT NULL, #标记位，前6位保留，后2位wr
+    PRIMARY KEY (username, id),
+    FOREIGN KEY (username) REFERENCES user (username),
+    FOREIGN KEY (id) REFERENCES file (id)
+);

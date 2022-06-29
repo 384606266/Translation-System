@@ -17,8 +17,17 @@ public class FileService {
         fileMapper.createFile(file.getFilename(), file.getUser(), file.getValue(), file.getContent());
     }
 
+    public void createFile(String filename, String user, int value, byte[] content) {
+        fileMapper.createFile(filename, user, value, content);
+    }
+
+
     public void deleteFile(int id) {
         fileMapper.deleteFile(id);
+    }
+
+    public void deleteFileByUser(String user) {
+        fileMapper.deleteFileByUser(user);
     }
 
     public File getFileById(int id) {
@@ -35,6 +44,10 @@ public class FileService {
 
     public void updateFile(int value, byte[] content, int id) {
         fileMapper.updateFile(value, content, id);
+    }
+
+    public void updateFile(File file) {
+        updateFile(file.getValue(), file.getContent(), file.getId());
     }
 
 }

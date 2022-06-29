@@ -15,13 +15,16 @@ public interface FileMapper {
     @Delete("DELETE FROM file WHERE id=#{id};")
     void deleteFile(@Param("id") int id);
 
+    @Delete("DELETE FROM file WHERE user=#{user};")
+    void deleteFileByUser(@Param("user") String user);
+
     @Select("SELECT * FROM file WHERE id=#{id};")
     File getFileById(@Param("id") int id);
 
-    @Select("SELECT * FROM file WHERE file_name=#{filename};")
+    @Select("SELECT * FROM file WHERE filename=#{filename};")
     List<File> getFileByName(@Param("filename") String filename);
 
-    @Select("SELECT FROM file WHERE user=#{user};")
+    @Select("SELECT * FROM file WHERE user=#{user};")
     List<File> getFileByUser(@Param("user") String user);
 
     @Update("UPDATE file SET value=#{value}, content=#{content} WHERE id=#{id};")

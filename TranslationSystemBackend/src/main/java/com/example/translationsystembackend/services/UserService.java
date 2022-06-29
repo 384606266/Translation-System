@@ -25,8 +25,8 @@ public class UserService {
         return userMapper.getUserByUsername(username);
     }
 
-    public void updateUserByUsername(User user, String oldUsername) {
-        userMapper.updateUserByUsername(user.getUsername(), user.getPasswordDigest(), user.getStatus(), user.getPoints(), user.getCreated(), user.getLastLogin(), user.getToken(), oldUsername);
+    public void updateUserByUsername(User user) {
+        userMapper.updateUserByUsername(user.getPasswordDigest(), user.getStatus(), user.getPoints(), user.getCreated(), user.getLastLogin(), user.getToken(), user.getUsername());
     }
 
     public void updateLoginInfoByUsername(Date lastLogin, String token, String username) {
