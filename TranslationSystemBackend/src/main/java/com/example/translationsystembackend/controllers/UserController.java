@@ -6,7 +6,6 @@ import com.example.translationsystembackend.interceptors.PassToken;
 import com.example.translationsystembackend.services.UserService;
 import com.example.translationsystembackend.utils.LoginUtil;
 import com.example.translationsystembackend.utils.UserUtil;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,6 @@ public class UserController {
     private UserService userService;
 
     /**
-     *
      * @param username 用户名，不允许为空
      * @param password 密码，不允许为空
      * @return 用户信息
@@ -50,7 +48,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param username 用户名
      * @return 用户信息
      *
@@ -67,16 +64,15 @@ public class UserController {
     }
 
     /**
-     *
-     * @param username 用户名，允许为空
-     * @param password 密码，允许为空
+     * @param username    用户名，允许为空
+     * @param password    密码，允许为空
      * @param oldUsername 原先用户名，不允许为空
      * @return 更新后的用户信息
      *
      * <p>更新用户的用户名与密码信息，采用put方法传递参数。若未找到用户抛出404错误，否则修改用户信息并返回更新后的信息。对于传递的参数若为空或不存在则不做修改。</p>
      */
     @PutMapping("/")
-    public ResponseEntity<User> updateUserInfo(@RequestParam(value = "username",required = false) String username, @RequestParam(value = "password",required = false) String password, @RequestParam("old_username") String oldUsername) {
+    public ResponseEntity<User> updateUserInfo(@RequestParam(value = "username", required = false) String username, @RequestParam(value = "password", required = false) String password, @RequestParam("old_username") String oldUsername) {
         User user = userService.getUserByUsername(oldUsername);
         if (user == null) {
             throw new NoUserException();
@@ -93,7 +89,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param username 用户名
      * @return 原用户信息
      *
