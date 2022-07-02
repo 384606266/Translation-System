@@ -21,13 +21,16 @@ public class FileService {
         fileMapper.createFile(filename, user, value, content);
     }
 
-
     public void deleteFile(int id) {
         fileMapper.deleteFile(id);
     }
 
     public void deleteFileByUser(String user) {
         fileMapper.deleteFileByUser(user);
+    }
+
+    public List<File> getFile(){
+        return fileMapper.getFile();
     }
 
     public File getFileById(int id) {
@@ -40,6 +43,10 @@ public class FileService {
 
     public List<File> getFileByUser(String user) {
         return fileMapper.getFileByUser(user);
+    }
+
+    public byte[] downloadFile(int id) {
+        return fileMapper.downloadFile(id);
     }
 
     public void updateFile(int value, byte[] content, int id) {

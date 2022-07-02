@@ -20,7 +20,7 @@ public interface AccessMapper {
     @Delete("DELETE FROM access WHERE id=#{id};")
     void deleteAccessById(@Param("id") int id);
 
-    @Select("SELECT * FROM access WHERE username=#{username}, id=#{id};")
+    @Select("SELECT * FROM access WHERE username=#{username} AND id=#{id};")
     Access getAccess(@Param("username") String username, @Param("id") int id);
 
     @Select("SELECT * FROM access WHERE username=#{username};")
@@ -29,7 +29,7 @@ public interface AccessMapper {
     @Select("SELECT * FROM access WHERE id=#{id};")
     List<Access> getAccessById(@Param("id") int id);
 
-    @Update("UPDATE access SET flag=#{flag} WHERE username=#{username}, id=#{id};")
+    @Update("UPDATE access SET flag=#{flag} WHERE username=#{username} AND id=#{id};")
     void updateAccess(@Param("flag") char flag, @Param("username") String username, @Param("id") int id);
 
 }

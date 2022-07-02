@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 @RestController
@@ -83,58 +85,61 @@ public class FileController {
     }
 
     /**
-     * @param request 请求对象
-     * @param id      文件号
+     * @return 所有文件对象
+     *
+     * <p>get方法请求所有文件对象。如果不是作者或者无读权限则撤销内容部分。</p>
+     */
+    @GetMapping("")
+    public ResponseEntity<List<File>> getFile() {
+        return new ResponseEntity<>(fileService.getFile(), HttpStatus.OK);
+    }
+
+    /**
+     * @param id 文件号
      * @return 文件对象
      *
      * <p>获取文件，采用get方法在路径中声明希望获得的文件号。如果用户名与作者不一致或者无写权限则清空内容后再返回。</p>
      */
     @GetMapping("/id/{id}")
-    public ResponseEntity<File> getFileById(HttpServletRequest request, @PathVariable("id") int id) {
-        String username = request.getHeader("Username");
-        File file = fileService.getFileById(id);
-        if (!(file.getUser().equals(username) || accessService.isReadable(username, file.getId()))) {
-            file.setContent(new byte[]{});
-        }
+    public ResponseEntity<File> getFileById(@PathVariable("id") int id) {
         return new ResponseEntity<>(fileService.getFileById(id), HttpStatus.OK);
     }
 
     /**
-     * @param request  请求对象
      * @param filename 文件名
      * @return 文件对象列表
      *
      * <p>获取文件，采用get方法在路径中声明希望获得的文件名。如果用户名与作者不一致或者无写权限则清空内容后再返回。</p>
      */
     @GetMapping("/filename/{filename}")
-    public ResponseEntity<List<File>> getFileByName(HttpServletRequest request, @PathVariable("filename") String filename) {
-        String username = request.getHeader("Username");
-        List<File> files = fileService.getFileByName(filename);
-        for (File file : files) {
-            if (!(file.getUser().equals(username) || accessService.isReadable(username, file.getId()))) {
-                file.setContent(new byte[]{});
-            }
-        }
-        return new ResponseEntity<>(files, HttpStatus.OK);
+    public ResponseEntity<List<File>> getFileByName(@PathVariable("filename") String filename) {
+        return new ResponseEntity<>(fileService.getFileByName(filename), HttpStatus.OK);
     }
 
     /**
-     * @param request 请求对象
-     * @param user    用户名
+     * @param user 用户名
      * @return 文件对象列表
      *
      * <p>获取文件，采用get方法在路径中声明希望获得的用户名相关的文件。如果用户名与作者不一致或者无写权限则清空内容后再返回。</p>
      */
     @GetMapping("/user/{user}")
-    public ResponseEntity<List<File>> getFileByUser(HttpServletRequest request, @PathVariable("user") String user) {
-        String username = request.getHeader("Username");
-        List<File> files = fileService.getFileByUser(user);
-        for (File file : files) {
-            if (!(file.getUser().equals(username) || accessService.isReadable(username, file.getId()))) {
-                file.setContent(new byte[]{});
-            }
+    public ResponseEntity<List<File>> getFileByUser(@PathVariable("user") String user) {
+        return new ResponseEntity<>(fileService.getFileByUser(user), HttpStatus.OK);
+    }
+
+    @GetMapping("/download/{id}")
+    public void downloadFile(HttpServletRequest request, HttpServletResponse response, @PathVariable("id") int id) throws IOException {
+        File file = fileService.getFileById(id);
+        byte[] content = fileService.downloadFile(id);
+        String username = file.getUser();
+        if (!(content == null) && (request.getHeader("Username").equals(username) || accessService.isReadable(username, id))) {
+            response.setHeader("Content-Disposition", String.format("attachment;filename=%s", file.getFilename()));
+            response.setContentType("application/octet-stream");
+            response.setContentLength(content.length);
+            OutputStream outputStream = response.getOutputStream();
+            outputStream.write(content);
+            outputStream.close();
         }
-        return new ResponseEntity<>(files, HttpStatus.OK);
     }
 
     /**

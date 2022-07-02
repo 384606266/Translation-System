@@ -24,9 +24,14 @@ public class LoginStatusInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Method method = ((HandlerMethod) handler).getMethod();
-        if (method.isAnnotationPresent(PassToken.class) && method.getAnnotation(PassToken.class).require()) {
+        if (request.getMethod().equals("OPTIONS")) {
             return true;
+        }
+        if (handler instanceof HandlerMethod) {
+            Method method = ((HandlerMethod) handler).getMethod();
+            if (method.isAnnotationPresent(PassToken.class) && method.getAnnotation(PassToken.class).require()) {
+                return true;
+            }
         }
         String token = request.getHeader("Token");
         String username = request.getHeader("Username");
