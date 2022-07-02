@@ -5,6 +5,8 @@ import com.example.translationsystembackend.mappers.FileMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 @Service
@@ -45,7 +47,7 @@ public class FileService {
         return fileMapper.getFileByUser(user);
     }
 
-    public byte[] downloadFile(int id) {
+    public ByteArrayInputStream downloadFile(int id) {
         return fileMapper.downloadFile(id);
     }
 

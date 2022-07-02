@@ -30,6 +30,6 @@ public interface AccessMapper {
     List<Access> getAccessById(@Param("id") int id);
 
     @Update("UPDATE access SET flag=#{flag} WHERE username=#{username} AND id=#{id};")
-    void updateAccess(@Param("flag") char flag, @Param("username") String username, @Param("id") int id);
+    void updateAccess(@Param("flag") int flag, @Param("username") String username, @Param("id") int id);
 
 }

@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -22,14 +23,12 @@ import java.util.List;
 @RequestMapping("/file")
 public class FileController {
 
-
     @Autowired
     private AccessService accessService;
     @Autowired
     private FileService fileService;
     @Autowired
     private UserService userService;
-
 
     /**
      * @param request       请求
@@ -127,17 +126,27 @@ public class FileController {
         return new ResponseEntity<>(fileService.getFileByUser(user), HttpStatus.OK);
     }
 
+    /**
+     * @param request 请求
+     * @param response 响应
+     * @param id 文件号
+     * @throws IOException 获取输出流失败抛出错误
+     *
+     * <p>get方法，获取指定的文件内容。</p>
+     */
     @GetMapping("/download/{id}")
     public void downloadFile(HttpServletRequest request, HttpServletResponse response, @PathVariable("id") int id) throws IOException {
         File file = fileService.getFileById(id);
-        byte[] content = fileService.downloadFile(id);
-        String username = file.getUser();
-        if (!(content == null) && (request.getHeader("Username").equals(username) || accessService.isReadable(username, id))) {
+        ByteArrayInputStream inputStream = fileService.downloadFile(id);
+        String username = request.getHeader("Username");
+        if (file != null && inputStream != null && (username.equals(file.getUser()) || accessService.isReadable(username, id))) {
             response.setHeader("Content-Disposition", String.format("attachment;filename=%s", file.getFilename()));
             response.setContentType("application/octet-stream");
-            response.setContentLength(content.length);
+            response.setContentLength(inputStream.available());
             OutputStream outputStream = response.getOutputStream();
-            outputStream.write(content);
+            while (inputStream.available() > 0) {
+                outputStream.write(inputStream.readNBytes(0x1000));
+            }
             outputStream.close();
         }
     }

@@ -11,13 +11,13 @@ import java.util.List;
 @Service
 public class AccessService {
 
-    public static final char READ_FLAG = 0x1;
-    public static final char WRITE_FLAG = 0x2;
+    public static final int READ_FLAG = 0x1;
+    public static final int WRITE_FLAG = 0x2;
 
     @Resource
     private AccessMapper accessMapper;
 
-    public void createAccess(String username, int id, char flag) {
+    public void createAccess(String username, int id, int flag) {
         accessMapper.createAccess(username, id, flag);
     }
 
@@ -53,7 +53,7 @@ public class AccessService {
         return accessMapper.getAccessById(id);
     }
 
-    public void updateAccess(char flag, String username, int id) {
+    public void updateAccess(int flag, String username, int id) {
         accessMapper.updateAccess(flag, username, id);
     }
 
@@ -78,7 +78,7 @@ public class AccessService {
     public void grantReadAccess(String username, int id) {
         Access access = getAccess(username, id);
         if (access == null) {
-            createAccess(username, id, (char) 0x1);
+            createAccess(username, id, 0x1);
         } else {
             updateAccess((char) (access.getFlag() | READ_FLAG), username, id);
         }
@@ -87,7 +87,7 @@ public class AccessService {
     public void grantWriteAccess(String username, int id) {
         Access access = getAccess(username, id);
         if (access == null) {
-            createAccess(username, id, (char) 0x2);
+            createAccess(username, id, 0x2);
         } else {
             updateAccess((char) (access.getFlag() | WRITE_FLAG), username, id);
         }

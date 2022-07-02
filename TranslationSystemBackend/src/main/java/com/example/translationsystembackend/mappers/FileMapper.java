@@ -3,6 +3,7 @@ package com.example.translationsystembackend.mappers;
 import com.example.translationsystembackend.entities.File;
 import org.apache.ibatis.annotations.*;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 
@@ -31,7 +32,7 @@ public interface FileMapper {
     List<File> getFileByUser(@Param("user") String user);
 
     @Select("SELECT content FROM file WHERE id=#{id};")
-    byte[] downloadFile(@Param("id") int id);
+    ByteArrayInputStream downloadFile(@Param("id") int id);
 
     @Update("UPDATE file SET value=#{value}, content=#{content} WHERE id=#{id};")
     void updateFile(@Param("value") int value, @Param("content") byte[] content, @Param("id") int id);
