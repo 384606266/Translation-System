@@ -7,6 +7,8 @@ import Home from './Home';
 import Page from './Page2';
 import Translation from './Pages/Translation/Translation';
 import Dictionary from './Pages/Dictionary/Dictionary';
+import Login from './Pages/Login/LoginView';
+import RegView from './Pages/Register/RegView';
 
 import {
   Nav00DataSource,
@@ -40,6 +42,8 @@ class App extends Component {
           <Route path="/abc" component={Page} />
           <Route path="/Translation" component={Translation} />
           <Route path="/Dictionary" component={Dictionary} />
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={RegView} />
           <Footer dataSource={Footer00DataSource} isMobile={this.state.isMobile} />
         </div>
       </Router>
