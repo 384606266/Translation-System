@@ -4,6 +4,9 @@ import java.util.Random;
 
 public class LoginUtil {
 
+    static final public String USERNAME_H = "Username";
+    static final public String TOKEN_H = "Token";
+
     public static String getRandomToken() {
         String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         Random random = new Random();

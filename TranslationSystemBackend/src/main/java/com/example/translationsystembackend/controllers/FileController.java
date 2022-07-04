@@ -6,6 +6,7 @@ import com.example.translationsystembackend.exceptions.NoUserException;
 import com.example.translationsystembackend.services.AccessService;
 import com.example.translationsystembackend.services.FileService;
 import com.example.translationsystembackend.services.UserService;
+import com.example.translationsystembackend.utils.LoginUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ public class FileController {
     private UserService userService;
 
     /**
+     *
      * @param request       请求
      * @param filename      文件名
      * @param user          用户名
@@ -42,7 +44,7 @@ public class FileController {
      */
     @PostMapping("/create/")
     public ResponseEntity<File> createFile(HttpServletRequest request, @RequestParam("filename") String filename, @RequestParam("user") String user, @RequestParam("value") int value, @RequestParam("file") MultipartFile multipartFile) {
-        if (!request.getHeader("Username").equals(user)) {
+        if (!request.getHeader(LoginUtil.USERNAME_H).equals(user)) {
             throw new IllegalLoginStatusException();
         } else if (userService.getUserByUsername(user) == null) {
             throw new NoUserException();
@@ -62,6 +64,7 @@ public class FileController {
     }
 
     /**
+     *
      * @param request 请求
      * @param id      文件id
      * @return 被删除的文件对象
@@ -70,7 +73,7 @@ public class FileController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<File> deleteFile(HttpServletRequest request, @PathVariable("id") int id) {
-        String username = request.getHeader("Username");
+        String username = request.getHeader(LoginUtil.USERNAME_H);
         File file = fileService.getFileById(id);
         if (file == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -84,6 +87,7 @@ public class FileController {
     }
 
     /**
+     *
      * @return 所有文件对象
      *
      * <p>get方法请求所有文件对象。如果不是作者或者无读权限则撤销内容部分。</p>
@@ -94,6 +98,7 @@ public class FileController {
     }
 
     /**
+     *
      * @param id 文件号
      * @return 文件对象
      *
@@ -105,6 +110,7 @@ public class FileController {
     }
 
     /**
+     *
      * @param filename 文件名
      * @return 文件对象列表
      *
@@ -116,6 +122,7 @@ public class FileController {
     }
 
     /**
+     *
      * @param user 用户名
      * @return 文件对象列表
      *
@@ -127,6 +134,7 @@ public class FileController {
     }
 
     /**
+     *
      * @param request 请求
      * @param response 响应
      * @param id 文件号
@@ -138,7 +146,7 @@ public class FileController {
     public void downloadFile(HttpServletRequest request, HttpServletResponse response, @PathVariable("id") int id) throws IOException {
         File file = fileService.getFileById(id);
         ByteArrayInputStream inputStream = fileService.downloadFile(id);
-        String username = request.getHeader("Username");
+        String username = request.getHeader(LoginUtil.USERNAME_H);
         if (file != null && inputStream != null && (username.equals(file.getUser()) || accessService.isReadable(username, id))) {
             response.setHeader("Content-Disposition", String.format("attachment;filename=%s", file.getFilename()));
             response.setContentType("application/octet-stream");
@@ -152,6 +160,7 @@ public class FileController {
     }
 
     /**
+     *
      * @param request       请求对象
      * @param value         文件价值，不可为空，若不希望发生变动则赋负值
      * @param multipartFile 文件对象，可为空
@@ -162,7 +171,7 @@ public class FileController {
      */
     @PutMapping("/")
     public ResponseEntity<File> updateFile(HttpServletRequest request, @RequestParam("value") int value, @RequestParam(value = "content", required = false) MultipartFile multipartFile, @RequestParam("id") int id) {
-        String username = request.getHeader("Username");
+        String username = request.getHeader(LoginUtil.USERNAME_H);
         File file = fileService.getFileById(id);
         if (file.getUser().equals(username) || accessService.isWritable(username, id)) {
             if (value >= 0) {
