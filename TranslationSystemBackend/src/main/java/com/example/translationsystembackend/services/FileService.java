@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.List;
 
 @Service
@@ -16,11 +15,11 @@ public class FileService {
     private FileMapper fileMapper;
 
     public void createFile(File file) {
-        fileMapper.createFile(file.getFilename(), file.getUser(), file.getValue(), file.getContent());
+        fileMapper.createFile(file.getFilename(), file.getUser(), file.getCost(), file.getContent());
     }
 
-    public void createFile(String filename, String user, int value, byte[] content) {
-        fileMapper.createFile(filename, user, value, content);
+    public void createFile(String filename, String user, int cost, byte[] content) {
+        fileMapper.createFile(filename, user, cost, content);
     }
 
     public void deleteFile(int id) {
@@ -31,7 +30,7 @@ public class FileService {
         fileMapper.deleteFileByUser(user);
     }
 
-    public List<File> getFile(){
+    public List<File> getFile() {
         return fileMapper.getFile();
     }
 
@@ -56,7 +55,7 @@ public class FileService {
     }
 
     public void updateFile(File file) {
-        updateFile(file.getValue(), file.getContent(), file.getId());
+        updateFile(file.getCost(), file.getContent(), file.getId());
     }
 
 }

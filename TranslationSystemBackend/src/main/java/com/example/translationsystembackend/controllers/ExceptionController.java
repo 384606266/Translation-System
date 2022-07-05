@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionController {
 
     /**
-     *
      * @return 404错误
      *
      * <p>处理未找到用户的错误。</p>
@@ -22,7 +21,6 @@ public class ExceptionController {
     }
 
     /**
-     *
      * @return 401错误
      *
      * <p>处理用户登陆状态不合法的错误。</p>

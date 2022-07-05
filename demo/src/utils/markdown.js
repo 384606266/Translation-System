@@ -1,4 +1,4 @@
-import { marked } from 'marked'
+import {marked} from 'marked'
 import xss from 'xss'
 import hljs from "highlight.js";
 

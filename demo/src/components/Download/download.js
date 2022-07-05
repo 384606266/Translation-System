@@ -35,10 +35,8 @@ class FileItem extends React.Component {
     downloadFile() {
         axios.get("http://127.0.0.1:8080/file/download/" + this.props.file.id, {
             headers: {
-                username: this.props.username,
-                token: this.props.token,
-            },
-            responseType: "blob",
+                username: this.props.username, token: this.props.token,
+            }, responseType: "blob",
         }).then((response) => {
             const blob = new Blob(response.data);
             const blobURL = window.URL.createObjectURL(blob);

@@ -1,12 +1,12 @@
-import React, { Fragment } from 'react';
+import React, {Fragment} from 'react';
 import TranslationTool from '../../components/TranslationTool/TranslationTool';
 
 import './Translation.less';
 
 const Translation = () => {
-    return(
+    return (
         <Fragment>
-            <TranslationTool />
+            <TranslationTool/>
         </Fragment>
     )
 
