@@ -17,6 +17,7 @@ public class AccessController {
     private AccessService accessService;
 
     /**
+     *
      * @param username 用户名
      * @param id       文件号
      * @return 授权对象
@@ -30,6 +31,7 @@ public class AccessController {
     }
 
     /**
+     *
      * @param username 用户名
      * @param id       文件号
      * @return 授权对象
@@ -43,6 +45,7 @@ public class AccessController {
     }
 
     /**
+     *
      * @param username 用户名
      * @param id       文件号
      * @return 原授权对象
@@ -62,6 +65,7 @@ public class AccessController {
     }
 
     /**
+     *
      * @param username 用户名
      * @param id       文件号
      * @return 原授权对象
@@ -81,6 +85,7 @@ public class AccessController {
     }
 
     /**
+     *
      * @param username 用户名
      * @param id       文件号
      * @return 授权对象
@@ -93,6 +98,7 @@ public class AccessController {
     }
 
     /**
+     *
      * @param username 用户名
      * @return 授权对象
      *

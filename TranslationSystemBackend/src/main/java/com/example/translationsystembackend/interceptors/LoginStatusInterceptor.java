@@ -4,6 +4,7 @@ import com.example.translationsystembackend.entities.User;
 import com.example.translationsystembackend.exceptions.IllegalLoginStatusException;
 import com.example.translationsystembackend.exceptions.NoUserException;
 import com.example.translationsystembackend.services.UserService;
+import com.example.translationsystembackend.utils.LoginUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -33,8 +34,8 @@ public class LoginStatusInterceptor implements HandlerInterceptor {
                 return true;
             }
         }
-        String token = request.getHeader("Token");
-        String username = request.getHeader("Username");
+        String username = request.getHeader(LoginUtil.USERNAME_H);
+        String token = request.getHeader(LoginUtil.TOKEN_H);
         if (token == null) {
             throw new IllegalLoginStatusException();
         } else if (username == null) {

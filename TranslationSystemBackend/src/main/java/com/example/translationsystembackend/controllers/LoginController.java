@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -31,7 +30,7 @@ public class LoginController {
      */
     @PassToken
     @PostMapping("/login/")
-    public ResponseEntity<User> login(HttpServletResponse response, @RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
+    public ResponseEntity<User> login(@RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
         User user = userService.getUserByUsername(username);
         if (user == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
