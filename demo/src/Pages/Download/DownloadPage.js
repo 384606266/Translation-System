@@ -7,14 +7,11 @@ import "./DownloadPage.css"
 
 class DownloadPage extends React.Component {
   render() {
-    const { TabPane } = Tabs;
     return (
       <div className="download-box">
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="模型和语料库" key="1">
+            <div className="background">
             <StoreTable></StoreTable>
-          </TabPane>
-        </Tabs>
+            </div>
       </div>
     );
   }

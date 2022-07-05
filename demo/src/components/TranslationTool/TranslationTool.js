@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./TranslationTool.less";
 import axios from "axios";
 import Select from "react-select";
-import { Row, Col, Icon ,Popover} from "antd";
+import { Row, Col, Icon, Popover } from "antd";
 import { Input } from "antd";
 import QueueAnim from "rc-queue-anim";
 
@@ -106,17 +106,25 @@ const TranslationTool = () => {
 
   const content = (
     <div>
-        <p>本项目为面向一带一路的低资源语种机器翻译系统</p>
-        <p>支持中文与其他36种小语种的互相翻译</p>
+      <p>本项目为面向一带一路的低资源语种机器翻译系统</p>
+      <p>支持中文与其他43种小语种的相互翻译</p>
     </div>
-  )
+  );
 
   return (
     <div className="block background">
       <div className="fluid-container ">
         <Row gutter={[32, 24]}>
+          <Row>
+            <Col span={18}></Col>
+            <Col>
+              <Popover content={content}>
+                <Icon type="question-circle-o" />
+              </Popover>
+            </Col>
+          </Row>
           <Col span={1}></Col>
-          <Col span={8} offset={1}>
+          <Col span={4} offset={1}>
             <Select
               className="selection"
               directionState={options1.value}
@@ -125,10 +133,7 @@ const TranslationTool = () => {
               onChange={handler1}
             />
           </Col>
-        </Row>
-        <Row gutter={[32, 24]}>
-          <Col span={1}></Col>
-          <Col span={8} offset={1}>
+          <Col span={4}>
             <Select
               className="selection"
               valueState={options.value}
@@ -136,13 +141,6 @@ const TranslationTool = () => {
               defaultValue={options[0]}
               onChange={handler}
             />
-          </Col>
-          <Col span={8}></Col>
-          <Col>
-          <Popover content={content}>
-          <Icon type="question-circle-o" />
-          </Popover>
-           
           </Col>
         </Row>
         <Row gutter={[32, 24]}>

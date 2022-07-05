@@ -166,8 +166,9 @@ const Dictionary = () => {
         <div className="block background">
             <Row gutter={[32, 24]}>
                 {empty}
-                <Col span={10} offset={7}>
+                <Col span={3} offset={2}>
                     <Select 
+                    className='selection'
                     valueState={options.value}
                     options={options}
                     defaultValue={options[0]}
@@ -175,12 +176,9 @@ const Dictionary = () => {
                     onChange={handler}
                     />
                 </Col> 
-                {empty} 
-            </Row>
-            <Row gutter={[32, 24]}>
-                <Col span={14}  offset={5}>
+                <Col span={14}>
                     <TextArea 
-                        className="form-control translate-textarea"
+                        className="dictionary-textarea"
                         placeholder="单词输入"
                         rows="1"
                         value={value}
@@ -191,13 +189,13 @@ const Dictionary = () => {
             <Row gutter={[32, 24]}>
                 <Col span={14}  offset={5}>
                     <TextArea 
-                        className="form-control translate-textarea" 
+                        className="dictionary-textarea" 
                         placeholder="输出"
-                        rows="6"
-                        value={"中文释义:\t" + CHTran + '\n' +
-                            "词性:\t"+output.part+'\n'
-                            +"词义：\t"+output.means+'\n'
-                            +"中文示例：\t"+sentences.cn+'\n'
+                        rows="14"
+                        value={"中文释义:\t" + CHTran + '\n' + '\n' +
+                            "词性:\t"+output.part+'\n' + '\n'
+                            +"词义：\t"+output.means+'\n'  + '\n'
+                            +"中文示例：\t"+sentences.cn+'\n' + '\n'
                             +"英文示例：\t"+sentences.fo
                             }
                         readOnly 
