@@ -4,7 +4,7 @@ import { enquireScreen } from 'enquire-js';
 import Header from './Home/Nav0';
 import Footer from './Home/Footer0';
 import Home from './Home';
-import Page from './Page2';
+import DownloadPage from './Pages/Download/DownloadPage';
 import Translation from './Pages/Translation/Translation';
 import Dictionary from './Pages/Dictionary/Dictionary';
 import Login from './Pages/Login/LoginView';
@@ -39,7 +39,7 @@ class App extends Component {
         <div>
           <Header dataSource={Nav00DataSource} isMobile={this.state.isMobile} />
           <Route exact path="/" component={Home} />
-          <Route path="/abc" component={Page} />
+          <Route path="/download" component={DownloadPage} />
           <Route path="/Translation" component={Translation} />
           <Route path="/Dictionary" component={Dictionary} />
           <Route path="/login" component={Login} />

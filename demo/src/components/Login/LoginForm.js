@@ -58,7 +58,7 @@ class NormalLoginForm extends React.Component {
           {getFieldDecorator('remember', {
             valuePropName: 'checked',
             initialValue: true,
-          })(<Checkbox>记住我</Checkbox>)}
+          })(<Checkbox className="remember-me-check">记住我</Checkbox>)}
           <Button type="primary" htmlType="submit" className="login-form-button">
             登录
           </Button>

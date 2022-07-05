@@ -42,35 +42,40 @@
     box-shadow: -15px 15px 15px rgba(0,0,0,.4);
 }
 
-.ant-btn-primary,.ant-btn-primary:focus{
-    background-color:#363636;
-    border-color:#363636;
+.login-form-button{
+    background-color:#1E90FF;
+    border-color:#1E90FF;
 }
 
-.ant-btn-primary:hover {
-    background-color:#828282;
-    border-color:#828282;
+.login-form-button:hover{
+    background-color:#6db6fe;
+    border-color:#6db6fe;
+}
+
+.login-form-button:focus{
+    background-color:#1E90FF;
+    border-color:#1E90FF;
 }
 
 a {
-    color:#363636;
+    color:#1E90FF;
 }
 a:hover {
-    color:#828282;
+    color:#6db6fe;
 }
 
 .ant-checkbox-wrapper:hover .ant-checkbox-inner,
 .ant-checkbox:hover .ant-checkbox-inner,
 .ant-checkbox-input:focus, .ant-checkbox-input:focus + .ant-checkbox-inner,
 .ant-checkbox-checked::after {
-    border: 1px solid #363636;
+    border: 1px solid #1E90FF;
 }
 
 
 .ant-checkbox-checked .ant-checkbox-inner,
 .ant-checkbox-indeterminate .ant-checkbox-inner {
-    background-color: #363636;
-    border: 1px solid #363636;
+    background-color: #1E90FF;
+    border: 1px solid #1E90FF;
 }
 
 
