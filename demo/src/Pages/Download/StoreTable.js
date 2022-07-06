@@ -47,24 +47,6 @@ const formItemLayout = {
 
 const Search = Input.Search;
 
-const props = {
-    name: "file",
-    action: "//jsonplaceholder.typicode.com/posts/",
-    headers: {
-        authorization: "authorization-text",
-    },
-    onChange(info) {
-        if (info.file.status !== "uploading") {
-            console.log(info.file, info.fileList);
-        }
-        if (info.file.status === "done") {
-            //   message.success(`${info.file.name} file uploaded successfully`);
-        } else if (info.file.status === "error") {
-            //   message.error(`${info.file.name} file upload failed.`);
-        }
-    },
-};
-
 class StoreTable extends React.Component {
     state = {
         data: [],
@@ -81,8 +63,8 @@ class StoreTable extends React.Component {
             let filename = this.state.data[i].filename;
             axios.get(API_URL + "/file/download/" + id, {
                 headers: {
-                    "Username": localStorage.getItem("username"),
-                    "Token": localStorage.getItem("token"),
+                    Username: localStorage.getItem("username"),
+                    Token: localStorage.getItem("token"),
                 },
             }).then((response) => {
                 if (response.status === 200) {
@@ -111,11 +93,10 @@ class StoreTable extends React.Component {
         });
     };
     handleOk = () => {
-        // TODO
-        axios.post(API_URL + "/create/", {}, {
+        axios.post(API_URL + "/file/create/", {}, {
             headers: {
-                "Username": localStorage.getItem("username"),
-                "Token": localStorage.getItem("Token"),
+                Username: localStorage.getItem("username"),
+                Token: localStorage.getItem("token"),
             },
         }).then()
         this.setState({
@@ -136,14 +117,19 @@ class StoreTable extends React.Component {
         //组件加载完成时调用一次
         axios.get(API_URL + "/file", {
             headers: {
-                "username": localStorage.getItem("username"),
-                "token": localStorage.getItem("token"),
+                Username: localStorage.getItem("username"),
+                Token: localStorage.getItem("token"),
             },
         }).then((response) => {
-            if (response.data) {
+            console.log(response);
+            if (response.status === 200 && response.data) {
                 this.setState({
                     "data": response.data,
                 });
+            }
+        }, (error) => {
+            if (error.response.data === "No user named exists.") {
+                alert("尚未登陆，请登陆！");
             }
         });
     }
@@ -179,7 +165,7 @@ class StoreTable extends React.Component {
                                     <InputNumber min={1} max={10} defaultValue={1}/>
                                 </FormItem>
                                 <FormItem {...formItemLayout} label="上传文件" hasFeedback>
-                                    <Upload {...props}>
+                                    <Upload>
                                         <Button>
                                             <Icon type="upload"/> Click to Upload
                                         </Button>
