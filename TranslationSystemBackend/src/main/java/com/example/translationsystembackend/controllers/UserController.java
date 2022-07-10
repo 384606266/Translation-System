@@ -27,7 +27,6 @@ public class UserController {
     private UserService userService;
 
     /**
-     *
      * @param username 用户名，不允许为空
      * @param password 密码，不允许为空
      * @return 用户信息
@@ -55,7 +54,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param username 用户名
      * @return 用户信息
      *
@@ -72,7 +70,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param password 密码，允许为空
      * @param username 用户名，不允许为空
      * @return 更新后的用户信息
@@ -94,7 +91,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param username 用户名
      * @return 原用户信息
      *

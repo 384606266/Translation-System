@@ -32,18 +32,17 @@ public class FileController {
     private UserService userService;
 
     /**
-     *
      * @param request       请求
      * @param filename      文件名
      * @param user          用户名
-     * @param value         文件积分值
+     * @param cost          文件积分值
      * @param multipartFile 文件
      * @return 文件对象，但是id不准确
      *
      * <p>创建文件，采用post方法。上传参数为文件名、用户名、文件积分值和文件。如果用户声明用户名不一致且没有写权限抛出错误返回401错误，不存在抛出错误返回404错误，如果文件获取失败返回406错误，成功返回文件对象。</p>
      */
     @PostMapping("/create/")
-    public ResponseEntity<File> createFile(HttpServletRequest request, @RequestParam("filename") String filename, @RequestParam("user") String user, @RequestParam("value") int value, @RequestParam("file") MultipartFile multipartFile) {
+    public ResponseEntity<File> createFile(HttpServletRequest request, @RequestParam("filename") String filename, @RequestParam("user") String user, @RequestParam("cost") int cost, @RequestParam("file") MultipartFile multipartFile) {
         if (!request.getHeader(LoginUtil.USERNAME_H).equals(user)) {
             throw new IllegalLoginStatusException();
         } else if (userService.getUserByUsername(user) == null) {
@@ -52,7 +51,7 @@ public class FileController {
             File file = new File();
             file.setFilename(filename);
             file.setUser(user);
-            file.setValue(value);
+            file.setCost(cost);
             try {
                 file.setContent(multipartFile.getBytes());
             } catch (IOException exception) {
@@ -64,7 +63,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param request 请求
      * @param id      文件id
      * @return 被删除的文件对象
@@ -87,18 +85,16 @@ public class FileController {
     }
 
     /**
-     *
      * @return 所有文件对象
      *
      * <p>get方法请求所有文件对象。如果不是作者或者无读权限则撤销内容部分。</p>
      */
     @GetMapping("")
-    public ResponseEntity<List<File>> getFile() {
+    public ResponseEntity<List<File>> getFiles() {
         return new ResponseEntity<>(fileService.getFile(), HttpStatus.OK);
     }
 
     /**
-     *
      * @param id 文件号
      * @return 文件对象
      *
@@ -110,7 +106,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param filename 文件名
      * @return 文件对象列表
      *
@@ -122,7 +117,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param user 用户名
      * @return 文件对象列表
      *
@@ -134,13 +128,12 @@ public class FileController {
     }
 
     /**
-     *
-     * @param request 请求
+     * @param request  请求
      * @param response 响应
-     * @param id 文件号
+     * @param id       文件号
      * @throws IOException 获取输出流失败抛出错误
      *
-     * <p>get方法，获取指定的文件内容。</p>
+     *                     <p>get方法，获取指定的文件内容。</p>
      */
     @GetMapping("/download/{id}")
     public void downloadFile(HttpServletRequest request, HttpServletResponse response, @PathVariable("id") int id) throws IOException {
@@ -160,9 +153,8 @@ public class FileController {
     }
 
     /**
-     *
      * @param request       请求对象
-     * @param value         文件价值，不可为空，若不希望发生变动则赋负值
+     * @param cost          文件价值，不可为空，若不希望发生变动则赋负值
      * @param multipartFile 文件对象，可为空
      * @param id            文件号
      * @return 文件列表
@@ -170,12 +162,12 @@ public class FileController {
      * <p>更新文件，采用put方法上传文件值。如果不为作者或者无写权限则返回401错误，若读取失败返回406错误，成功则返回更新后的文件。</p>
      */
     @PutMapping("/")
-    public ResponseEntity<File> updateFile(HttpServletRequest request, @RequestParam("value") int value, @RequestParam(value = "content", required = false) MultipartFile multipartFile, @RequestParam("id") int id) {
+    public ResponseEntity<File> updateFile(HttpServletRequest request, @RequestParam("cost") int cost, @RequestParam(value = "content", required = false) MultipartFile multipartFile, @RequestParam("id") int id) {
         String username = request.getHeader(LoginUtil.USERNAME_H);
         File file = fileService.getFileById(id);
         if (file.getUser().equals(username) || accessService.isWritable(username, id)) {
-            if (value >= 0) {
-                file.setValue(value);
+            if (cost >= 0) {
+                file.setCost(cost);
             }
             if (multipartFile != null) {
                 try {

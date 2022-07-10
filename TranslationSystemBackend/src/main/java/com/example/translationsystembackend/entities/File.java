@@ -10,7 +10,7 @@ public class File implements Serializable {
     private int id;
     private String filename;
     private String user;
-    private int value;
+    private int cost;
     private byte[] content;
 
 }

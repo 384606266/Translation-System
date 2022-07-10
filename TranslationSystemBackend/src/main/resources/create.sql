@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS file
     id       int unsigned AUTO_INCREMENT NOT NULL,
     filename varchar(64)                 NOT NULL,
     user     varchar(64)                 NOT NULL,
-    value    int unsigned                NOT NULL,
+    cost    int unsigned                NOT NULL,
     content  LongBlob,
     PRIMARY KEY (id),
     FOREIGN KEY (user) REFERENCES user (username)
