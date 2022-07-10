@@ -2,22 +2,22 @@ import React from "react";
 import "antd/dist/antd.css";
 import axios from "axios";
 import {
-  Table,
   Button,
   Card,
-  Icon,
-  Modal,
-  Input,
-  Form,
-  Upload,
-  InputNumber,
-  Row,
   Col,
+  Form,
+  Icon,
+  Input,
+  InputNumber,
+  Modal,
   Popover,
+  Row,
+  Table,
+  Upload,
 } from "antd";
 import "./ModelTable.css";
 
-const API_URL = "http://111.186.44.72:8080";
+const API_URL = "http://127.0.0.1:8080";
 
 const columns = [
   {
@@ -60,55 +60,40 @@ const formItemLayout = {
 
 const Search = Input.Search;
 
-const data = [
-  {
-    key: "1",
-    filename: "模型1",
-    user: "Alice",
-    cost: 1,
-  },
-  {
-    key: "2",
-    filename: "语料库1",
-    user: "Bob",
-    cost: 3,
-  },
-  {
-    key: "3",
-    filename: "模型2",
-    user: "Alice",
-    cost: 7,
-  },
-];
-
-const props = {
-  name: "file",
-  action: "//jsonplaceholder.typicode.com/posts/",
-  headers: {
-    authorization: "authorization-text",
-  },
-  onChange(info) {
-    if (info.file.status !== "uploading") {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === "done") {
-      //   message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === "error") {
-      //   message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
-
 class StoreTable extends React.Component {
   state = {
+    data: [],
     selectedRowKeys: [], // Check here to configure the default column
     loading: false,
-    storeItem: [],
   };
+
   start = () => {
     this.setState({
       loading: true,
     });
+    for (let i of this.state.selectedRowKeys) {
+      let id = this.state.data[i].id;
+      let filename = this.state.data[i].filename;
+      axios
+        .get(API_URL + "/file/download/" + id, {
+          headers: {
+            Username: localStorage.getItem("username"),
+            Token: localStorage.getItem("token"),
+          },
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            let blob = new Blob([response.data]);
+            let blobUrl = window.URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.download = filename;
+            a.href = blobUrl;
+            a.click();
+          } else {
+            alert("下载文件" + filename + "失败");
+          }
+        });
+    }
     // ajax request after empty completing
     setTimeout(() => {
       this.setState({
@@ -117,13 +102,24 @@ class StoreTable extends React.Component {
       });
     }, 1000);
   };
-
   showUpLoad = () => {
     this.setState({
       visible: true,
     });
   };
   handleOk = () => {
+    axios
+      .post(
+        API_URL + "/file/create/",
+        {},
+        {
+          headers: {
+            Username: localStorage.getItem("username"),
+            Token: localStorage.getItem("token"),
+          },
+        }
+      )
+      .then();
     this.setState({
       visible: false,
     });
@@ -135,17 +131,33 @@ class StoreTable extends React.Component {
   };
 
   onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     this.setState({ selectedRowKeys });
   };
 
   componentDidMount() {
     //组件加载完成时调用一次
-    axios.get(API_URL + "/getFile/").then((response) => {
-      if (response.data) {
-        this.state.storeItem = response.data;
-      }
-    });
+    axios
+      .get(API_URL + "/file", {
+        headers: {
+          Username: localStorage.getItem("username"),
+          Token: localStorage.getItem("token"),
+        },
+      })
+      .then(
+        (response) => {
+          console.log(response);
+          if (response.status === 200 && response.data) {
+            this.setState({
+              data: response.data,
+            });
+          }
+        },
+        (error) => {
+          if (error.response.data === "No user named exists.") {
+            alert("尚未登陆，请登陆！");
+          }
+        }
+      );
   }
 
   render() {
@@ -179,7 +191,7 @@ class StoreTable extends React.Component {
                   <InputNumber min={1} max={10} defaultValue={1} />
                 </FormItem>
                 <FormItem {...formItemLayout} label="上传文件" hasFeedback>
-                  <Upload {...props}>
+                  <Upload>
                     <Button>
                       <Icon type="upload" /> Click to Upload
                     </Button>
@@ -226,7 +238,7 @@ class StoreTable extends React.Component {
         <Table
           rowSelection={rowSelection}
           columns={columns}
-          dataSource={data} //数据来源
+          dataSource={this.state.data} //数据来源
           pagination={Pagination}
         />
       </Card>

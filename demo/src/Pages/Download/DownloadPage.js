@@ -1,6 +1,5 @@
-import { Tabs} from "antd";
+
 import React from "react";
-import ModelTable from "./ModelTable";
 import StoreTable from "./StoreTable";
 import "antd/dist/antd.css";
 import "./DownloadPage.css"
