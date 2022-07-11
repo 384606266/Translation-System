@@ -1,7 +1,6 @@
 import React from 'react';
 import Logo from './imgs/logo.png'
 
-
 export const Nav00DataSource = {
     wrapper: {className: 'header0 home-page-wrapper'},
     page: {className: 'home-page'},

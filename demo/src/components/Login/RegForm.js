@@ -1,178 +1,91 @@
-import React, {useState} from 'react';
-import {Button, Col, Form, Input, message, Row} from 'antd';
+import {Button, Checkbox, Form, Icon, Input, message} from 'antd';
+import React from 'react';
+import {history} from "../../utils/history";
 import 'antd/dist/antd.css';
 import './login.css'
-import {history} from "../../utils/history";
 import AuthService from "./AuthService";
-import {LockOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 
-const formItemLayout = {
-    labelCol: {
-        xs: {
-            span: 24,
-        }, sm: {
-            span: 8,
-        },
-    }, wrapperCol: {
-        xs: {
-            span: 24,
-        }, sm: {
-            span: 16,
-        },
-    },
-};
+class NormalRegForm extends React.Component {
+    //补充注册函数
+    // handleSubmit = e => {
+    //     e.preventDefault();
+    //     this.props.form.validateFields((err, values) => {
+    //         if (!err) {
+    //             AuthService.login(values.username, values.password).then(() => {
+    //                 message.success("登录成功！", 1)
+    //                 history.push('#/')
+    //                 window.location.reload()
+    //             }, error => {
+    //                 const resMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+    //                 message.error(resMessage, 1)
+    //             })
+    //         }
+    //     });
 
-const tailFormItemLayout = {
-    wrapperCol: {
-        xs: {
-            span: 24, offset: 0,
-        }, sm: {
-            span: 16, offset: 8,
-        },
-    },
-};
+    // };
 
-const RegistrationForm = () => {
-    const [form] = Form.useForm();
-    const [timeOut, setTimeOut] = useState(60)
-    const [sendCodeHidden, setSendCodeHidden] = useState(false)
+    checkPassword = (rule, value, callback) => {
+        const form = this.props.form;
+        if (value && value !== form.getFieldValue('password')) {
+          callback('输入的两次密码必须相同!');
+        } else {
+          callback();
+        }
+      };
 
-    const onFinish = (values) => {
-        AuthService.register(values.username, values.email, values.password).then(res => {
-            message.success('注册成功，请登录~', 1)
-            console.log('register success!')
-        }, error => {
-            const resMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-            message.error(resMessage, 1)
-            console.log(resMessage)
-        });
-        console.log('Received values of form: ', values);
+    checkConfirm = (rule, value, callback) => {
+        const form = this.props.form;
+        if (value) {
+          form.validateFields(['confirm'], { force: true });
+        }
+        callback();
     };
 
-    const handleGoLogin = () => {
-        history.push('/login');
+    render() {
+        const {getFieldDecorator} = this.props.form;
+        return (<Form onSubmit={this.handleSubmit} className="login-form">
+            <Form.Item hasFeedback>
+                {getFieldDecorator('username', {
+                    rules: [{required: true, message: '请输入您的用户名'}],
+                })(<Input
+                    prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                    placeholder="用户名"
+                />,)}
+            </Form.Item>
+            <Form.Item hasFeedback>
+                {getFieldDecorator('password', {
+                    rules: [{
+                        required: true, message: '请输入您的密码！',
+                      }, {
+                        validator: this.checkConfirm,
+                      }],
+                })(<Input
+                    prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                    placeholder="密码"
+                />,)}
+            </Form.Item>
+            <Form.Item hasFeedback>
+                {getFieldDecorator('checkpassword', {
+                   rules: [{
+                    required: true, message: '请确认您的密码!',
+                  }, {
+                    validator: this.checkPassword,
+                  }],
+                })(<Input
+                    prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                    placeholder="确认密码"
+                />,)}
+            </Form.Item>
+            <Form.Item>
+                <Button type="primary" htmlType="submit" className="login-form-button">
+                    确认
+                </Button>
+                <a href="#/login">登录</a>
+            </Form.Item>
+        </Form>);
     }
+}
 
-    const getCode = () => {
+const RegForm = Form.create()(NormalRegForm);
 
-    }
-
-    return (<Form
-        {...formItemLayout}
-        form={form}
-        name="register"
-        onFinish={onFinish}
-        initialValues={{}}
-        scrollToFirstError
-    >
-
-        <Form.Item
-            name="username"
-            label="用户名"
-            rules={[{
-                required: true, message: '请输入用户名!', whitespace: true,
-            }, () => ({
-                validator(_, value) {
-                    // 用户名长度小于12位
-                    if (!value || value.length <= 12) {
-                        return Promise.resolve();
-                    }
-                    return Promise.reject(new Error('用户名过长！'));
-                }
-            }),]}
-        >
-            <Input prefix={<UserOutlined className="site-form-item-icon"/>}
-                   placeholder="用户名"/>
-        </Form.Item>
-
-        <Form.Item
-            name="email"
-            label="邮箱"
-            rules={[{
-                type: 'email', message: '邮箱不合法!',
-            }, {
-                required: true, message: '请输入邮箱!',
-            },]}
-        >
-            <Input
-                prefix={<MailOutlined className="site-form-item-icon"/>}
-                placeholder="邮箱"
-            />
-        </Form.Item>
-
-        <Form.Item
-            name="password"
-            label="密码"
-            rules={[{
-                required: true, message: '请输入密码!',
-            }, () => ({
-                validator(_, value) {
-                    // 密码在6至18位之间
-                    if (!value || (value.length >= 6 && value.length <= 18)) {
-                        return Promise.resolve();
-                    }
-                    return Promise.reject(new Error('密码不合法！'));
-                },
-            }),]}
-            hasFeedback
-        >
-            <Input.Password prefix={<LockOutlined className="site-form-item-icon"/>}
-                            type="password"
-                            placeholder="密码"/>
-        </Form.Item>
-
-        <Form.Item
-            name="confirm"
-            label="确认密码"
-            dependencies={['password']}
-            hasFeedback
-            rules={[{
-                required: true, message: '请确认密码!',
-            }, ({getFieldValue}) => ({
-                validator(_, value) {
-                    if (!value || getFieldValue('password') === value) {
-                        return Promise.resolve();
-                    }
-
-                    return Promise.reject(new Error('两次输入的密码不一致!'));
-                },
-            }),]}
-        >
-            <Input.Password prefix={<LockOutlined className="site-form-item-icon"/>}
-                            type="password"
-                            placeholder="密码"/>
-        </Form.Item>
-
-        <Form.Item label="验证码">
-            <Row gutter={8}>
-                <Col span={12}>
-                    <Form.Item
-                        name="captcha"
-                        noStyle
-                        rules={[{
-                            required: true, message: '请输入验证码!',
-                        },]}
-                    >
-                        <Input/>
-                    </Form.Item>
-                </Col>
-                <Col span={12}>
-                    <div style={{position: "relative"}}>
-                        {/*TODO: 点击发送验证码的函数getCode*/}
-                        <Button disabled={sendCodeHidden} onClick={getCode}>获取验证码</Button>
-                        {sendCodeHidden ? <div style={{position: "absolute"}}>{timeOut}秒后重试</div> : ""}
-                    </div>
-                </Col>
-            </Row>
-        </Form.Item>
-
-        <Form.Item {...tailFormItemLayout}>
-            <Button type="primary" htmlType="submit">
-                注册
-            </Button>&nbsp;
-            已有账号？ &nbsp;<Button onClick={handleGoLogin.bind(this)} type="link">登录</Button>
-        </Form.Item>
-    </Form>);
-};
-
-export default RegistrationForm;
+export default RegForm;
