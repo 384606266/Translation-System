@@ -16,7 +16,7 @@ class Header extends React.Component {
             viewRegAndLog: '',
             viewPersonal: 'none',
             username: '',    //用户名
-            mycost: '',  //积分
+            points: '',  //积分
         };
 
         /*
@@ -66,7 +66,7 @@ class Header extends React.Component {
                         <Icon type="pay-circle-o" style={{fontSize: 20}}/>
                     </Col>
                     <Col span={20}>
-                        <font style={{fontSize: 15}}>现有积分：{this.state.mycost}</font>
+                        <font style={{fontSize: 15}}>现有积分：{this.state.points}</font>
                     </Col>
                 </Row>
                 <Button style={{height: '35px', width: '100%'}} type="danger" onClick={() => {

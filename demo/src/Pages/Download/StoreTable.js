@@ -48,69 +48,70 @@ const formItemLayout = {
     },
 };
 
-const dataTest = [  //测试数据
-    {
-        key: "1",
-        id: "1",
-        filename: "胡彦斌",
-        cost: 32,
-        address: "西湖区湖底公园1号",
-    },
-    {
-        key: "2",
-        id: "2",
-        filename: "胡彦祖",
-        cost: 42,
-        address: "西湖区湖底公园1号",
-    },
-];
-
 class StoreTable extends React.Component {
-    state = {
-        data: [],
-        savedData: [],
-        selectedRowKeys: [], // Check here to configure the default column
-        visible: false,
-        filename: "", //上传文件名
-        cost: "", //上传文件所需积分
-        mycost: 80, //我的积分
-    };
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: [],
+            savedData: [],
+            selectedRowKeys: [], // Check here to configure the default column
+            visible: false,
+            filename: "", //上传文件名
+            cost: "", //上传文件所需积分
+            points: 0, //我的积分
+        };
+        axios.get(API_URL + "/user/" + localStorage.getItem("username"), {
+            headers: {
+                Username: localStorage.getItem("username"),
+                Token: localStorage.getItem("token"),
+            },
+        }).then((response) => {
+                if (response.status === 200) {
+                    this.setState({
+                        points: response.data.points,
+                    })
+                }
+            },
+            () => {
+                message.error("获取用户信息失败");
+            });
+    }
 
     //-----------文件下载------------
     showDownload = () => {
         let content = "";
-        let allfile = [];
-        let allcost = 0;
+        let allFiles = [];
+        let allPoints = 0;
         let param = [];
         let _this = this;
         for (let i of this.state.selectedRowKeys) {
             i = i - 1; //i是当前行数，需要减一
             let file = [];
-            file["key"] = this.state.data[i].id;
             file["id"] = this.state.data[i].id;
             file["filename"] = this.state.data[i].filename;
             file["cost"] = this.state.data[i].cost;
             param.push(file);
 
-            allcost += file["cost"];
-            content = <p>{this.state.data.filename[i]}</p>;
-            allfile.push(content);
+            allPoints += file["cost"];
+            content = <p>{this.state.data[i].filename}</p>;
+            allFiles.push(content);
         }
-        allfile.push(
+        allFiles.push(
             <div style={{fontWeight: 600}}>
                 <font>共需积分：</font>
-                <font style={{color: "red"}}>{allcost}</font>
-                <font> / 您现有积分：{this.state.mycost}</font>
+                <font style={{color: "red"}}>{allPoints}</font>
+                <font> / 您现有积分：{this.state.points}</font>
             </div>
         );
         confirm({
             title: "您确认要下载这些文件吗？",
-            content: [allfile],
+            content: [allFiles],
             onOk() {
-                if (allcost > _this.state.mycost) {
+                if (allPoints > _this.state.points) {
                     message.warning("您的积分不足");
                 } else {
-                    return new Promise((resolve, reject) => {
+                    return new Promise(() => {
                         _this.downloadFile(param);
                     }).catch(() => {
                         message.error("下载失败，请刷新后再试");
@@ -118,44 +119,41 @@ class StoreTable extends React.Component {
                 }
             },
             onCancel() {
-                console.log("Cancel");
             },
         });
     };
 
     downloadFile = (param) => {
-        const _this = this;
         for (let each of param) {
             let id = each.id;
             let filename = each.filename;
-            axios.get(API_URL + "/file/download/" + id, {
-                headers: {
-                    Username: localStorage.getItem("username"),
-                    Token: localStorage.getItem("token"),
-                },
-            }).then((response) => {
-                if (response.status === 200) {
-                    _this.setState({
-                        //直接扣除积分，不需重新刷新界面
-                        mycost: _this.state.mycost - each.cost,
-                    });
-                    let blob = new Blob([response.data]);
-                    let blobUrl = window.URL.createObjectURL(blob);
-                    let a = document.createElement("a");
-                    a.download = filename;
-                    a.href = blobUrl;
-                    a.click();
-                } else {
-                    message.error("下载文件" + filename + "失败");
-                }
-            });
+            axios
+                .get(API_URL + "/file/download/" + id, {
+                    headers: {
+                        Username: localStorage.getItem("username"),
+                        Token: localStorage.getItem("token"),
+                    },
+                })
+                .then((response) => {
+                    if (response.status === 200) {
+                        this.setState({
+                            //直接扣除积分，不需重新刷新界面
+                            points: this.state.points - each.cost,
+                        });
+                        let blob = new Blob([response.data]);
+                        let blobUrl = window.URL.createObjectURL(blob);
+                        let a = document.createElement("a");
+                        a.download = filename;
+                        a.href = blobUrl;
+                        a.click();
+                    } else {
+                        message.error("下载文件" + filename + "失败");
+                    }
+                });
         }
-        // ajax request after empty completing
-        setTimeout(() => {
-            this.setState({
-                selectedRowKeys: [],
-            });
-        }, 1000);
+        this.setState({
+            selectedRowKeys: [],
+        });
     };
     //------------文件上传------------
     showUpLoad = () => {
@@ -164,18 +162,17 @@ class StoreTable extends React.Component {
         });
     };
     handleOk = () => {
-        axios
-            .post(
-                API_URL + "/file/create/",
-                {},
-                {
-                    headers: {
-                        Username: localStorage.getItem("username"),
-                        Token: localStorage.getItem("token"),
-                    },
-                }
-            )
-            .then();
+        axios.post(
+            API_URL + "/file/create/",
+            {},
+            {
+                headers: {
+                    Username: localStorage.getItem("username"),
+                    Token: localStorage.getItem("token"),
+                },
+            }
+        ).then(() => {
+        });
         this.setState({
             visible: false,
         });
@@ -197,9 +194,9 @@ class StoreTable extends React.Component {
         });
     };
 
-    costChange = (value) => {
+    costChange = (cost) => {
         this.setState({
-            cost: value,
+            cost: cost,
         });
     };
 
@@ -208,6 +205,7 @@ class StoreTable extends React.Component {
             this.setState({
                 data: this.state.savedData.slice(0),
             });
+
         } else {
             let len = this.state.savedData.length;
             let list = this.state.savedData.slice(0);
@@ -237,15 +235,14 @@ class StoreTable extends React.Component {
             })
             .then(
                 (response) => {
-                    console.log(response);
                     if (response.status === 200 && response.data) {
                         const arr = [];
-                        for (let i = 0; i < response.data.length; ++i) {
-                            arr.push(Object.assign({}, response.data[i], {"key": i + 1}));
+                        for (let i = 0; i < response.data.length; i++) {
+                            arr.push(Object.assign({}, response.data[i], {'key': i + 1}));
                         }
                         this.setState({
                             data: arr,
-                            savedData: response.data.slice(0),
+                            savedData: arr.slice(0),
                         });
                     }
                 },
@@ -255,10 +252,6 @@ class StoreTable extends React.Component {
                     }
                 }
             );
-        // this.setState({ //未接入后端时的测试数据
-        //   data:dataTest,
-        //   savedData: dataTest.slice(0),
-        // });
     }
 
     render() {
@@ -280,7 +273,7 @@ class StoreTable extends React.Component {
                         visible={this.state.visible}
                         onOk={this.handleOk}
                         onCancel={this.handleCancel}
-                        okText="上传"
+                        okText="完成"
                         cancelText="取消"
                     >
                         <div className="upload-box">
@@ -289,15 +282,19 @@ class StoreTable extends React.Component {
                                     <Input onChange={this.filenameChange}></Input>
                                 </FormItem>
                                 <FormItem {...formItemLayout} label="所需积分" hasFeedback>
-                                    <InputNumber
-                                        min={1}
-                                        max={10}
-                                        defaultValue={1}
-                                        onChange={this.costChange}
-                                    />
+                                    <InputNumber min={0} onChange={this.costChange}/>
                                 </FormItem>
                                 <FormItem {...formItemLayout} label="上传文件" hasFeedback>
-                                    <Upload>
+                                    <Upload action={API_URL + "/file/create/"}
+                                            data={{
+                                                filename: this.state.filename,
+                                                user: localStorage.getItem("username"),
+                                                cost: this.state.cost,
+                                            }}
+                                            headers={{
+                                                Username: localStorage.getItem("username"),
+                                                Token: localStorage.getItem("token"),
+                                            }}>
                                         <Button>
                                             <Icon type="upload"/> Click to Upload
                                         </Button>

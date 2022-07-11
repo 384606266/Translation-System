@@ -3,7 +3,6 @@ package com.example.translationsystembackend.controllers;
 import com.example.translationsystembackend.entities.User;
 import com.example.translationsystembackend.exceptions.NoUserException;
 import com.example.translationsystembackend.interceptors.PassToken;
-import com.example.translationsystembackend.services.AccessService;
 import com.example.translationsystembackend.services.FileService;
 import com.example.translationsystembackend.services.UserService;
 import com.example.translationsystembackend.utils.LoginUtil;
@@ -19,8 +18,6 @@ import java.util.Date;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private AccessService accessService;
     @Autowired
     private FileService fileService;
     @Autowired
@@ -102,7 +99,6 @@ public class UserController {
         if (user == null) {
             throw new NoUserException();
         } else {
-            accessService.deleteAccessByUsername(username);
             fileService.deleteFileByUser(username);
             userService.deleteByUsername(username);
             return new ResponseEntity<>(user, HttpStatus.OK);

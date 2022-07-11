@@ -1,9 +1,9 @@
 package com.example.translationsystembackend.controllers;
 
 import com.example.translationsystembackend.entities.File;
+import com.example.translationsystembackend.entities.User;
 import com.example.translationsystembackend.exceptions.IllegalLoginStatusException;
 import com.example.translationsystembackend.exceptions.NoUserException;
-import com.example.translationsystembackend.services.AccessService;
 import com.example.translationsystembackend.services.FileService;
 import com.example.translationsystembackend.services.UserService;
 import com.example.translationsystembackend.utils.LoginUtil;
@@ -24,8 +24,6 @@ import java.util.List;
 @RequestMapping("/file")
 public class FileController {
 
-    @Autowired
-    private AccessService accessService;
     @Autowired
     private FileService fileService;
     @Autowired
@@ -75,10 +73,9 @@ public class FileController {
         File file = fileService.getFileById(id);
         if (file == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        } else if (!(fileService.getFileById(id).getUser().equals(username) || accessService.isWritable(username, id))) {
+        } else if (!fileService.getFileById(id).getUser().equals(username)) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         } else {
-            accessService.deleteAccessById(id);
             fileService.deleteFile(id);
             return new ResponseEntity<>(file, HttpStatus.OK);
         }
@@ -140,7 +137,16 @@ public class FileController {
         File file = fileService.getFileById(id);
         ByteArrayInputStream inputStream = fileService.downloadFile(id);
         String username = request.getHeader(LoginUtil.USERNAME_H);
-        if (file != null && inputStream != null && (username.equals(file.getUser()) || accessService.isReadable(username, id))) {
+        System.out.println("Hello?");
+        if (file != null && inputStream != null) {
+            User user = userService.getUserByUsername(username);
+            User author = userService.getUserByUsername(file.getUser());
+            if (user.getPoints() >= file.getCost() && !username.equals(file.getUser())) {
+                user.setPoints(user.getPoints() - file.getCost());
+                author.setPoints(author.getPoints() + file.getCost());
+            }
+            userService.updateUserByUsername(user);
+            userService.updateUserByUsername(author);
             response.setHeader("Content-Disposition", String.format("attachment;filename=%s", file.getFilename()));
             response.setContentType("application/octet-stream");
             response.setContentLength(inputStream.available());
@@ -165,7 +171,7 @@ public class FileController {
     public ResponseEntity<File> updateFile(HttpServletRequest request, @RequestParam("cost") int cost, @RequestParam(value = "content", required = false) MultipartFile multipartFile, @RequestParam("id") int id) {
         String username = request.getHeader(LoginUtil.USERNAME_H);
         File file = fileService.getFileById(id);
-        if (file.getUser().equals(username) || accessService.isWritable(username, id)) {
+        if (file.getUser().equals(username)) {
             if (cost >= 0) {
                 file.setCost(cost);
             }
