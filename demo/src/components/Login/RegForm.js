@@ -1,42 +1,43 @@
-import {Button, Checkbox, Form, Icon, Input, message} from 'antd';
+import {Button, Form, Icon, Input, message} from 'antd';
 import React from 'react';
-import {history} from "../../utils/history";
 import 'antd/dist/antd.css';
 import './login.css'
-import AuthService from "./AuthService";
+import axios from "axios";
+
+const API_URL = "http://127.0.0.1:8080"
 
 class NormalRegForm extends React.Component {
-    //补充注册函数
-    // handleSubmit = e => {
-    //     e.preventDefault();
-    //     this.props.form.validateFields((err, values) => {
-    //         if (!err) {
-    //             AuthService.login(values.username, values.password).then(() => {
-    //                 message.success("登录成功！", 1)
-    //                 history.push('#/')
-    //                 window.location.reload()
-    //             }, error => {
-    //                 const resMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-    //                 message.error(resMessage, 1)
-    //             })
-    //         }
-    //     });
+    // 补充注册函数
+    handleSubmit = e => {
+        e.preventDefault();
+        this.props.form.validateFields((err, values) => {
+            axios.post(API_URL + "/user/create/", "username=" + values.username + "&password=" + values.password).then((response) => {
+                if (response.status === 200) {
+                    message.success("创建用户成功");
+                    window.location.reload();
+                }
+            }, (error) => {
+                if (error.response.status === 409) {
+                    message.error("该用户名已被注册");
+                }
+            })
+        })
 
-    // };
+    };
 
     checkPassword = (rule, value, callback) => {
         const form = this.props.form;
         if (value && value !== form.getFieldValue('password')) {
-          callback('输入的两次密码必须相同!');
+            callback('输入的两次密码必须相同!');
         } else {
-          callback();
+            callback();
         }
-      };
+    };
 
     checkConfirm = (rule, value, callback) => {
         const form = this.props.form;
         if (value) {
-          form.validateFields(['confirm'], { force: true });
+            form.validateFields(['confirm'], {force: true});
         }
         callback();
     };
@@ -56,9 +57,9 @@ class NormalRegForm extends React.Component {
                 {getFieldDecorator('password', {
                     rules: [{
                         required: true, message: '请输入您的密码！',
-                      }, {
+                    }, {
                         validator: this.checkConfirm,
-                      }],
+                    }],
                 })(<Input
                     prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>}
                     placeholder="密码"
@@ -66,11 +67,11 @@ class NormalRegForm extends React.Component {
             </Form.Item>
             <Form.Item hasFeedback>
                 {getFieldDecorator('checkpassword', {
-                   rules: [{
-                    required: true, message: '请确认您的密码!',
-                  }, {
-                    validator: this.checkPassword,
-                  }],
+                    rules: [{
+                        required: true, message: '请确认您的密码!',
+                    }, {
+                        validator: this.checkPassword,
+                    }],
                 })(<Input
                     prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>}
                     placeholder="确认密码"

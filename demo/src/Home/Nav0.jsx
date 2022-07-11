@@ -1,7 +1,7 @@
 import React from 'react';
 import {findDOMNode} from 'react-dom';
 import TweenOne from 'rc-tween-one';
-import {Menu,Popover,Button,Card,Row,Col,Icon} from 'antd';
+import {Button, Card, Col, Icon, Menu, Popover, Row} from 'antd';
 import {Link} from "react-router-dom";
 
 const Item = Menu.Item;
@@ -12,11 +12,11 @@ class Header extends React.Component {
         this.state = {
             phoneOpen: false,
             menuHeight: 0,
-            isLogin:false,
-            viewRegAndLog:'',
-            viewPersonal:'none',
-            username:'',    //用户名
-            mycost:'',  //积分
+            isLogin: false,
+            viewRegAndLog: '',
+            viewPersonal: 'none',
+            username: '',    //用户名
+            mycost: '',  //积分
         };
 
         /*
@@ -30,7 +30,7 @@ class Header extends React.Component {
     点击登出按钮时触发，调用后端接口
     将viewRegAndLog设为''，viewPersonal设为'none'，清空username和mycost信息，也可直接刷新页面？
     */
-    logOut = () =>{
+    logOut = () => {
 
     };
 
@@ -44,32 +44,34 @@ class Header extends React.Component {
     };
 
     render() {
-        const {...props} = this.props; 
+        const {...props} = this.props;
         const {dataSource, isMobile} = props;
         delete props.dataSource;
         delete props.isMobile;
         const {menuHeight, phoneOpen} = this.state;
         //个人页面
         const content = [
-            <Card style={{height:'180px',width:'250px',textAlign:'left'}}>
-                <Row style={{height:'50px'}}>
+            <Card style={{height: '180px', width: '250px', textAlign: 'left'}}>
+                <Row style={{height: '50px'}}>
                     <Col span={4}>
-                        <Icon type="user" style={{ fontSize: 20}}/>   
+                        <Icon type="user" style={{fontSize: 20}}/>
                     </Col>
                     <Col span={20}>
-                        <font style={{ fontSize: 15}}>用户名：{this.state.username}</font>
+                        <font style={{fontSize: 15}}>用户名：{this.state.username}</font>
                     </Col>
                 </Row>
                 <Row></Row>
-                <Row style={{height:'50px'}}>
+                <Row style={{height: '50px'}}>
                     <Col span={4}>
-                        <Icon type="pay-circle-o" style={{ fontSize: 20}}/>   
+                        <Icon type="pay-circle-o" style={{fontSize: 20}}/>
                     </Col>
                     <Col span={20}>
-                        <font style={{ fontSize: 15}}>现有积分：{this.state.mycost}</font>
+                        <font style={{fontSize: 15}}>现有积分：{this.state.mycost}</font>
                     </Col>
                 </Row>
-                <Button style={{height:'35px',width:'100%'}} type="danger" onClick={() => {this.logOut();}}>登出</Button>
+                <Button style={{height: '35px', width: '100%'}} type="danger" onClick={() => {
+                    this.logOut();
+                }}>登出</Button>
             </Card>
 
         ];
@@ -119,13 +121,14 @@ class Header extends React.Component {
                             <Item><Link to={{pathname: '/Translation'}}>翻译</Link></Item>
                             <Item><Link to={{pathname: '/Dictionary'}}>词典</Link></Item>
                             <Item><Link to={{pathname: '/download'}}>下载</Link></Item>
-                            <Item style={{display:this.state.viewRegAndLog}}><Link to={{pathname: '/login'}}>登录</Link></Item>
-                            <Item style={{display:this.state.viewRegAndLog}}><Link to={{pathname: '/register'}}>注册</Link></Item>
-                            <Item style={{display:this.state.viewPersonal}}>
+                            <Item style={{display: this.state.viewRegAndLog}}><Link to={{pathname: '/login'}}>登录</Link></Item>
+                            <Item style={{display: this.state.viewRegAndLog}}><Link
+                                to={{pathname: '/register'}}>注册</Link></Item>
+                            <Item style={{display: this.state.viewPersonal}}>
                                 <Popover placement="bottomRight" content={content}>
                                     <div>个人</div>
                                 </Popover>
-                            </Item>    
+                            </Item>
                         </Menu>
                     </TweenOne>
                 </div>

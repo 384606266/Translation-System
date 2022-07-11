@@ -30,7 +30,7 @@ public class LoginStatusInterceptor implements HandlerInterceptor {
         }
         if (handler instanceof HandlerMethod) {
             Method method = ((HandlerMethod) handler).getMethod();
-            if (method.isAnnotationPresent(PassToken.class) && method.getAnnotation(PassToken.class).require()) {
+            if (method.isAnnotationPresent(PassToken.class) && method.getAnnotation(PassToken.class).require() || method.getName().equals("error")) {
                 return true;
             }
         }
