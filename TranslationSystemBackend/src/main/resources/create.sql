@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS YTSL;
+use YTSL; 
 CREATE TABLE IF NOT EXISTS user
 (
     username        varchar(64)  NOT NULL,
