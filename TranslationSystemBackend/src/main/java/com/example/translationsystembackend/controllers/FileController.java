@@ -137,7 +137,6 @@ public class FileController {
         File file = fileService.getFileById(id);
         ByteArrayInputStream inputStream = fileService.downloadFile(id);
         String username = request.getHeader(LoginUtil.USERNAME_H);
-        System.out.println("Hello?");
         if (file != null && inputStream != null) {
             User user = userService.getUserByUsername(username);
             User author = userService.getUserByUsername(file.getUser());
