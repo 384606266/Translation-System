@@ -395,9 +395,9 @@ export const Footer00DataSource = {
         children: (
             <span>
         {' '}
-                <a href>上海交通大学</a>
+                <a href>译通丝路团队</a>
                 {' '}
-                SJTU
+                YTSL
                 © 2022
       </span>
         ),
