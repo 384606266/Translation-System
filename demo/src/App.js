@@ -12,6 +12,8 @@ import RegView from './Pages/Register/RegView';
 
 import {Footer00DataSource, Nav00DataSource,} from './Home/data.source.js';
 
+export const API_URL = "http://127.0.0.1:8080";
+
 let isMobile;
 enquireScreen((b) => {
     isMobile = b;

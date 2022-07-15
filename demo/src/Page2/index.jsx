@@ -3,8 +3,8 @@
 import React from 'react';
 import {enquireScreen} from 'enquire-js';
 
-import Content0 from './Content0';
-import Content7 from './Content7';
+import Content0 from '../Home/Content0';
+import Content7 from '../Home/Content7';
 
 import {Content00DataSource, Content70DataSource,} from './data.source.js';
 

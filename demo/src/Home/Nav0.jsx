@@ -5,8 +5,8 @@ import {Button, Card, Col, Icon, Menu, Popover, Row} from 'antd';
 import {Link} from "react-router-dom";
 import axios from "axios";
 import AuthService from '../components/Login/AuthService';
+import {API_URL} from '../App';
 
-const API_URL = "http://111.186.50.131:8080";
 
 const Item = Menu.Item;
 
@@ -31,10 +31,10 @@ class Header extends React.Component {
             console.log(response.data);
             if (response.status === 200) {
                 this.setState({
-                    username:response.data.username,
+                    username: response.data.username,
                     points: response.data.points,
                     viewRegAndLog: 'none',
-                    viewPersonal:'',
+                    viewPersonal: '',
                 })
             }
         }, () => {
@@ -46,7 +46,7 @@ class Header extends React.Component {
         AuthService.logout();
         this.setState({
             viewRegAndLog: '',
-            viewPersonal:'none',
+            viewPersonal: 'none',
         })
         window.location.reload();   //刷新界面
     };

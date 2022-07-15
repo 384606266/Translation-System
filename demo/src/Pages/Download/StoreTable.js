@@ -3,8 +3,7 @@ import "antd/dist/antd.css";
 import axios from "axios";
 import {Button, Card, Col, Form, Icon, Input, InputNumber, message, Modal, Popover, Row, Table, Upload,} from "antd";
 import "./ModelTable.css";
-
-const API_URL = "http://111.186.50.131:8080";
+import {API_URL} from '../../App';
 
 const columns = [{
     title: (<div>
@@ -47,15 +46,15 @@ class StoreTable extends React.Component {
                 Username: localStorage.getItem("username"), Token: localStorage.getItem("token"),
             },
         }).then((response) => {
-            if (response.status === 200) {
-                this.setState({
-                    points: response.data.points,
-                })
-            }
-        }, 
-        () => {
-            // message.error("获取用户信息失败");
-        });
+                if (response.status === 200) {
+                    this.setState({
+                        points: response.data.points,
+                    })
+                }
+            },
+            () => {
+                // message.error("获取用户信息失败");
+            });
     }
 
     //-----------文件下载------------
@@ -89,7 +88,7 @@ class StoreTable extends React.Component {
                     message.warning("您的积分不足");
                 } else {
                     return new Promise((resolve, reject) => {
-                        setTimeout(_this.downloadFile(param) ==true ? resolve : reject, 1000);
+                        setTimeout(_this.downloadFile(param) === true ? resolve : reject, 1000);
                     }).catch(() => {
                         message.error("下载失败，请刷新后再试");
                     });

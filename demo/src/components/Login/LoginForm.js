@@ -48,7 +48,13 @@ class NormalLoginForm extends React.Component {
                     valuePropName: 'checked', initialValue: true,
                 })(<Checkbox className="remember-me-check">记住我</Checkbox>)}
                 <Button type="primary" htmlType="submit" className="login-form-button">
-                    确认
+                    登录
+                </Button>
+                <Button type="primary" className="login-form-button" onClick={() => {
+                    localStorage.clear();
+                    message.success("已成功登出");
+                }}>
+                    登出
                 </Button>
                 <a href="#/register">注册</a>
             </Form.Item>

@@ -3,8 +3,7 @@ import React from 'react';
 import 'antd/dist/antd.css';
 import './login.css'
 import axios from "axios";
-
-const API_URL = "http://111.186.50.131:8080"
+import {API_URL} from '../../App';
 
 class NormalRegForm extends React.Component {
     // 补充注册函数

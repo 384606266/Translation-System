@@ -1,7 +1,6 @@
 import axios from "axios";
 import Qs from 'qs'
-
-const API_URL = "http://111.186.50.131:8080";
+import {API_URL} from '../../App';
 
 class AuthService {
     login(username, password) {
