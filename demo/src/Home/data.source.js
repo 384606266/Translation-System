@@ -67,7 +67,7 @@ export const Content00DataSource = {
                     icon: {
                         className: 'icon',
                         children: language,
-                            // 'https://zos.alipayobjects.com/rmsportal/WBnVOjtIlGWbzyQivuyq.png',
+                        // 'https://zos.alipayobjects.com/rmsportal/WBnVOjtIlGWbzyQivuyq.png',
                     },
                     title: {children: '面向“一带一路”低资源语种'},
                     content: {children: '促进区域合作和文化传播'},
@@ -82,7 +82,7 @@ export const Content00DataSource = {
                     icon: {
                         className: 'icon',
                         children:
-                            pic1,
+                        pic1,
                     },
                     title: {children: '多终端多场景使用'},
                     content: {children: '旅游、商务、教育、安全等场景'},
@@ -97,7 +97,7 @@ export const Content00DataSource = {
                     icon: {
                         className: 'icon',
                         children: serve,
-                            // 'https://zos.alipayobjects.com/rmsportal/EkXWVvAaFJKCzhMmQYiX.png',
+                        // 'https://zos.alipayobjects.com/rmsportal/EkXWVvAaFJKCzhMmQYiX.png',
                     },
                     title: {children: '多样化的服务'},
                     content: {children: '集成式一体化的服务平台'},

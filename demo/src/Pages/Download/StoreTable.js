@@ -6,32 +6,19 @@ import "./ModelTable.css";
 
 const API_URL = "http://127.0.0.1:8080";
 
-const columns = [
-    {
-        title: (
-            <div>
-                文件名称 <Icon type="file-text"/>
-            </div>
-        ),
-        dataIndex: "filename",
-    },
-    {
-        title: (
-            <div>
-                上传者 <Icon type="user"/>
-            </div>
-        ),
-        dataIndex: "user",
-    },
-    {
-        title: (
-            <div>
-                所需积分 <Icon type="pay-circle-o"/>
-            </div>
-        ),
-        dataIndex: "cost",
-    },
-];
+const columns = [{
+    title: (<div>
+        文件名称 <Icon type="file-text"/>
+    </div>), dataIndex: "filename",
+}, {
+    title: (<div>
+        上传者 <Icon type="user"/>
+    </div>), dataIndex: "user",
+}, {
+    title: (<div>
+        所需积分 <Icon type="pay-circle-o"/>
+    </div>), dataIndex: "cost",
+},];
 
 const FormItem = Form.Item;
 const confirm = Modal.confirm;
@@ -39,12 +26,9 @@ const Search = Input.Search;
 
 const formItemLayout = {
     labelCol: {
-        xs: {span: 24},
-        sm: {span: 6},
-    },
-    wrapperCol: {
-        xs: {span: 24},
-        sm: {span: 14},
+        xs: {span: 24}, sm: {span: 6},
+    }, wrapperCol: {
+        xs: {span: 24}, sm: {span: 14},
     },
 };
 
@@ -53,29 +37,24 @@ class StoreTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: [],
-            savedData: [],
-            selectedRowKeys: [], // Check here to configure the default column
-            visible: false,
-            filename: "", //上传文件名
+            data: [], savedData: [], selectedRowKeys: [], // Check here to configure the default column
+            visible: false, filename: "", //上传文件名
             cost: "", //上传文件所需积分
             points: 0, //我的积分
         };
         axios.get(API_URL + "/user/" + localStorage.getItem("username"), {
             headers: {
-                Username: localStorage.getItem("username"),
-                Token: localStorage.getItem("token"),
+                Username: localStorage.getItem("username"), Token: localStorage.getItem("token"),
             },
         }).then((response) => {
-                if (response.status === 200) {
-                    this.setState({
-                        points: response.data.points,
-                    })
-                }
-            },
-            () => {
-                message.error("获取用户信息失败");
-            });
+            if (response.status === 200) {
+                this.setState({
+                    points: response.data.points,
+                })
+            }
+        }, () => {
+            message.error("获取用户信息失败");
+        });
     }
 
     //-----------文件下载------------
@@ -92,18 +71,15 @@ class StoreTable extends React.Component {
             file["filename"] = this.state.data[i].filename;
             file["cost"] = this.state.data[i].cost;
             param.push(file);
-
             allPoints += file["cost"];
             content = <p>{this.state.data[i].filename}</p>;
             allFiles.push(content);
         }
-        allFiles.push(
-            <div style={{fontWeight: 600}}>
-                <font>共需积分：</font>
-                <font style={{color: "red"}}>{allPoints}</font>
-                <font> / 您现有积分：{this.state.points}</font>
-            </div>
-        );
+        allFiles.push(<div style={{fontWeight: 600}}>
+            <font>共需积分：</font>
+            <font style={{color: "red"}}>{allPoints}</font>
+            <font> / 您现有积分：{this.state.points}</font>
+        </div>);
         confirm({
             title: "您确认要下载这些文件吗？",
             content: [allFiles],
@@ -130,9 +106,8 @@ class StoreTable extends React.Component {
             axios
                 .get(API_URL + "/file/download/" + id, {
                     headers: {
-                        Username: localStorage.getItem("username"),
-                        Token: localStorage.getItem("token"),
-                    },
+                        Username: localStorage.getItem("username"), Token: localStorage.getItem("token"),
+                    }, responseType: "blob",
                 })
                 .then((response) => {
                     if (response.status === 200) {
@@ -162,16 +137,11 @@ class StoreTable extends React.Component {
         });
     };
     handleOk = () => {
-        axios.post(
-            API_URL + "/file/create/",
-            {},
-            {
-                headers: {
-                    Username: localStorage.getItem("username"),
-                    Token: localStorage.getItem("token"),
-                },
-            }
-        ).then(() => {
+        axios.post(API_URL + "/file/create/", {}, {
+            headers: {
+                Username: localStorage.getItem("username"), Token: localStorage.getItem("token"),
+            },
+        }).then(() => {
         });
         this.setState({
             visible: false,
@@ -229,122 +199,114 @@ class StoreTable extends React.Component {
         axios
             .get(API_URL + "/file", {
                 headers: {
-                    Username: localStorage.getItem("username"),
-                    Token: localStorage.getItem("token"),
+                    Username: localStorage.getItem("username"), Token: localStorage.getItem("token"),
                 },
             })
-            .then(
-                (response) => {
-                    if (response.status === 200 && response.data) {
-                        const arr = [];
-                        for (let i = 0; i < response.data.length; i++) {
-                            arr.push(Object.assign({}, response.data[i], {'key': i + 1}));
-                        }
-                        this.setState({
-                            data: arr,
-                            savedData: arr.slice(0),
-                        });
+            .then((response) => {
+                if (response.status === 200 && response.data) {
+                    const arr = [];
+                    for (let i = 0; i < response.data.length; i++) {
+                        arr.push(Object.assign({}, response.data[i], {'key': i + 1}));
                     }
-                },
-                (error) => {
-                    if (error.response.data === "No user named exists.") {
-                        alert("尚未登陆，请登陆！");
-                    }
+                    this.setState({
+                        data: arr, savedData: arr.slice(0),
+                    });
                 }
-            );
+            }, (error) => {
+                if (error.response.data === "No user named exists.") {
+                    alert("尚未登陆，请登陆！");
+                }
+            });
     }
 
     render() {
         const {selectedRowKeys} = this.state;
         const rowSelection = {
-            selectedRowKeys,
-            onChange: this.onSelectChange,
+            selectedRowKeys, onChange: this.onSelectChange,
         };
         const Pagination = {
             pageSize: 8, // 每页条数
         };
         const hasSelected = selectedRowKeys.length > 0;
 
-        return (
-            <Card className="model-box">
-                <div style={{marginBottom: 16}}>
-                    <Modal
-                        title="上传文件"
-                        visible={this.state.visible}
-                        onOk={this.handleOk}
-                        onCancel={this.handleCancel}
-                        okText="完成"
-                        cancelText="取消"
-                    >
-                        <div className="upload-box">
-                            <Form>
-                                <FormItem {...formItemLayout} label="文件名" hasFeedback>
-                                    <Input onChange={this.filenameChange}></Input>
-                                </FormItem>
-                                <FormItem {...formItemLayout} label="所需积分" hasFeedback>
-                                    <InputNumber min={0} onChange={this.costChange}/>
-                                </FormItem>
-                                <FormItem {...formItemLayout} label="上传文件" hasFeedback>
-                                    <Upload action={API_URL + "/file/create/"}
-                                            data={{
-                                                filename: this.state.filename,
-                                                user: localStorage.getItem("username"),
-                                                cost: this.state.cost,
-                                            }}
-                                            headers={{
-                                                Username: localStorage.getItem("username"),
-                                                Token: localStorage.getItem("token"),
-                                            }}>
-                                        <Button>
-                                            <Icon type="upload"/> Click to Upload
-                                        </Button>
-                                    </Upload>
-                                </FormItem>
-                            </Form>
-                        </div>
-                    </Modal>
+        return (<Card className="model-box">
+            <div style={{marginBottom: 16}}>
+                <Modal
+                    title="上传文件"
+                    visible={this.state.visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                    okText="完成"
+                    cancelText="取消"
+                >
+                    <div className="upload-box">
+                        <Form>
+                            <FormItem {...formItemLayout} label="文件名" hasFeedback>
+                                <Input onChange={this.filenameChange}></Input>
+                            </FormItem>
+                            <FormItem {...formItemLayout} label="所需积分" hasFeedback>
+                                <InputNumber min={0} onChange={this.costChange}/>
+                            </FormItem>
+                            <FormItem {...formItemLayout} label="上传文件" hasFeedback>
+                                <Upload action={API_URL + "/file/create/"}
+                                        data={{
+                                            filename: this.state.filename,
+                                            user: localStorage.getItem("username"),
+                                            cost: this.state.cost,
+                                        }}
+                                        headers={{
+                                            Username: localStorage.getItem("username"),
+                                            Token: localStorage.getItem("token"),
+                                        }}>
+                                    <Button>
+                                        <Icon type="upload"/> Click to Upload
+                                    </Button>
+                                </Upload>
+                            </FormItem>
+                        </Form>
+                    </div>
+                </Modal>
 
-                    <Row>
-                        <Col span={6}>
-                            <Popover content={"点击此处上传文件"}>
-                                <Button
-                                    type="default"
-                                    onClick={this.showUpLoad}
-                                    style={{marginRight: 20, marginLeft: 10}}
-                                >
-                                    上传
-                                </Button>
-                            </Popover>
-
+                <Row>
+                    <Col span={6}>
+                        <Popover content={"点击此处上传文件"}>
                             <Button
-                                type="primary"
-                                onClick={this.showDownload}
-                                disabled={!hasSelected}
+                                type="default"
+                                onClick={this.showUpLoad}
+                                style={{marginRight: 20, marginLeft: 10}}
                             >
-                                下载
+                                上传
                             </Button>
-                        </Col>
-                        <Col span={12}></Col>
-                        <Col span={6}>
-                            <Search
-                                placeholder="搜索模型或语料库"
-                                onSearch={this.searchFile}
-                            />
-                        </Col>
-                    </Row>
+                        </Popover>
 
-                    <span style={{marginLeft: 8}}>
+                        <Button
+                            type="primary"
+                            onClick={this.showDownload}
+                            disabled={!hasSelected}
+                        >
+                            下载
+                        </Button>
+                    </Col>
+                    <Col span={12}></Col>
+                    <Col span={6}>
+                        <Search
+                            placeholder="搜索模型或语料库"
+                            onSearch={this.searchFile}
+                        />
+                    </Col>
+                </Row>
+
+                <span style={{marginLeft: 8}}>
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
           </span>
-                </div>
-                <Table
-                    rowSelection={rowSelection}
-                    columns={columns}
-                    dataSource={this.state.data} //数据来源
-                    pagination={Pagination}
-                />
-            </Card>
-        );
+            </div>
+            <Table
+                rowSelection={rowSelection}
+                columns={columns}
+                dataSource={this.state.data} //数据来源
+                pagination={Pagination}
+            />
+        </Card>);
     }
 }
 
