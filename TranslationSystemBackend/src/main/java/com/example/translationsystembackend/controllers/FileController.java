@@ -24,6 +24,8 @@ import java.util.List;
 @RequestMapping("/file")
 public class FileController {
 
+    static final int SLICE_LEN = 0x1000;
+
     @Autowired
     private FileService fileService;
     @Autowired
@@ -138,20 +140,22 @@ public class FileController {
         ByteArrayInputStream inputStream = fileService.downloadFile(id);
         String username = request.getHeader(LoginUtil.USERNAME_H);
         if (file != null && inputStream != null) {
-            User user = userService.getUserByUsername(username);
-            User author = userService.getUserByUsername(file.getUser());
-            if (user.getPoints() >= file.getCost() && !username.equals(file.getUser())) {
-                user.setPoints(user.getPoints() - file.getCost());
-                author.setPoints(author.getPoints() + file.getCost());
+            synchronized (this) {
+                User user = userService.getUserByUsername(username);
+                User author = userService.getUserByUsername(file.getUser());
+                if (user.getPoints() >= file.getCost() && !username.equals(file.getUser())) {
+                    user.setPoints(user.getPoints() - file.getCost());
+                    author.setPoints(author.getPoints() + file.getCost());
+                    userService.updateUserByUsername(user);
+                    userService.updateUserByUsername(author);
+                }
             }
-            userService.updateUserByUsername(user);
-            userService.updateUserByUsername(author);
             response.setHeader("Content-Disposition", String.format("attachment;filename=%s", file.getFilename()));
             response.setContentType("application/octet-stream");
             response.setContentLength(inputStream.available());
             OutputStream outputStream = response.getOutputStream();
             while (inputStream.available() > 0) {
-                outputStream.write(inputStream.readNBytes(0x1000));
+                outputStream.write(inputStream.readNBytes(SLICE_LEN));
             }
             outputStream.close();
         }
@@ -180,7 +184,6 @@ public class FileController {
                 } catch (IOException e) {
                     return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
                 }
-
             }
             fileService.updateFile(file);
             return new ResponseEntity<>(file, HttpStatus.OK);
