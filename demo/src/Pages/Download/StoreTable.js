@@ -4,7 +4,7 @@ import axios from "axios";
 import {Button, Card, Col, Form, Icon, Input, InputNumber, message, Modal, Popover, Row, Table, Upload,} from "antd";
 import "./ModelTable.css";
 
-const API_URL = "http://127.0.0.1:8080";
+const API_URL = "http://111.186.50.131:8080";
 
 const columns = [{
     title: (<div>
@@ -52,8 +52,9 @@ class StoreTable extends React.Component {
                     points: response.data.points,
                 })
             }
-        }, () => {
-            message.error("获取用户信息失败");
+        }, 
+        () => {
+            // message.error("获取用户信息失败");
         });
     }
 
@@ -87,8 +88,8 @@ class StoreTable extends React.Component {
                 if (allPoints > _this.state.points) {
                     message.warning("您的积分不足");
                 } else {
-                    return new Promise(() => {
-                        _this.downloadFile(param);
+                    return new Promise((resolve, reject) => {
+                        setTimeout(_this.downloadFile(param) ==true ? resolve : reject, 1000);
                     }).catch(() => {
                         message.error("下载失败，请刷新后再试");
                     });
@@ -129,6 +130,7 @@ class StoreTable extends React.Component {
         this.setState({
             selectedRowKeys: [],
         });
+        return true;
     };
     //------------文件上传------------
     showUpLoad = () => {
@@ -146,6 +148,10 @@ class StoreTable extends React.Component {
         this.setState({
             visible: false,
         });
+        message.success("上传成功！");
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
     };
     handleCancel = () => {
         this.setState({

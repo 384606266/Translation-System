@@ -3,6 +3,10 @@ import {findDOMNode} from 'react-dom';
 import TweenOne from 'rc-tween-one';
 import {Button, Card, Col, Icon, Menu, Popover, Row} from 'antd';
 import {Link} from "react-router-dom";
+import axios from "axios";
+import AuthService from '../components/Login/AuthService';
+
+const API_URL = "http://111.186.50.131:8080";
 
 const Item = Menu.Item;
 
@@ -19,19 +23,32 @@ class Header extends React.Component {
             points: '',  //积分
         };
 
-        /*
-        需要实现一个功能，从后台获取用户当前登录状态
-        若用户已登录，则将viewPersonal设为''，viewRegAndLog设为'none',并补充username和mycost信息
-        若用户未登录，不改变state中的状态
-        */
+        axios.get(API_URL + "/user/" + localStorage.getItem("username"), {
+            headers: {
+                Username: localStorage.getItem("username"), Token: localStorage.getItem("token"),
+            },
+        }).then((response) => {
+            console.log(response.data);
+            if (response.status === 200) {
+                this.setState({
+                    username:response.data.username,
+                    points: response.data.points,
+                    viewRegAndLog: 'none',
+                    viewPersonal:'',
+                })
+            }
+        }, () => {
+            // message.error("获取用户信息失败");
+        });
     }
 
-    /*
-    点击登出按钮时触发，调用后端接口
-    将viewRegAndLog设为''，viewPersonal设为'none'，清空username和mycost信息，也可直接刷新页面？
-    */
     logOut = () => {
-
+        AuthService.logout();
+        this.setState({
+            viewRegAndLog: '',
+            viewPersonal:'none',
+        })
+        window.location.reload();   //刷新界面
     };
 
     phoneClick = () => {
