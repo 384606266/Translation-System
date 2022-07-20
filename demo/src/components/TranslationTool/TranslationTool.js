@@ -65,7 +65,7 @@ const TranslationTool = () => {
             const translateRequest = () => {
                 if (value !== "") {
                     axios
-                        .post("http://202.120.36.7:55000/translate/", {
+                        .post("http://47.115.227.63:5000/translate/", {
                             uuid: "ABCDEF1234",
                             source: value,
                             language: valueState["value"],

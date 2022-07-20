@@ -65,7 +65,7 @@ const Dictionary = () => {
             if (value !== "") {
                 if (valueState["value"] !== 'Chinese') {
                     //翻译方向为小语种到中文时，先调翻译模型翻译成中文
-                    axios.post('http://202.120.36.7:55000/translate/', {
+                    axios.post('http://47.115.227.63:5000/translate/', {
                         uuid: 'ABCDEF1234',
                         source: value,
                         language: valueState["value"],
@@ -75,7 +75,7 @@ const Dictionary = () => {
                         .then(function (response) {
                             setCHTran(response.data.output)
                             if (response.data.output !== "") {
-                                axios.post('http://202.120.36.7:55000/dict/', {
+                                axios.post('http://47.115.227.63:5000/dict/', {
                                     uuid: 'ABCDEF1234',
                                     source: response.data.output,
                                     language: 'Chinese',
@@ -114,7 +114,7 @@ const Dictionary = () => {
                         });
                 } else {
                     //翻译方向为中文到小语种时，直接调用词典
-                    axios.post('http://202.120.36.7:55000/dict/', {
+                    axios.post('http://47.115.227.63:5000/dict/', {
                         uuid: 'ABCDEF1234',
                         source: value,
                         language: valueState['value'],
