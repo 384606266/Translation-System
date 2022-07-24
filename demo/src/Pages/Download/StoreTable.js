@@ -219,7 +219,7 @@ class StoreTable extends React.Component {
                 }
             }, (error) => {
                 if (error.response.data === "No user named exists.") {
-                    alert("尚未登陆，请登陆！");
+                    alert("模型和语料库仅登录后可下载，请登录！");
                 }
             });
     }
