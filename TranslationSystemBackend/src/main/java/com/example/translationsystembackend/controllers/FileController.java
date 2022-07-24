@@ -1,10 +1,12 @@
 package com.example.translationsystembackend.controllers;
 
 import com.example.translationsystembackend.entities.File;
+import com.example.translationsystembackend.entities.Slice;
 import com.example.translationsystembackend.entities.User;
 import com.example.translationsystembackend.exceptions.IllegalLoginStatusException;
 import com.example.translationsystembackend.exceptions.NoUserException;
 import com.example.translationsystembackend.services.FileService;
+import com.example.translationsystembackend.services.SliceService;
 import com.example.translationsystembackend.services.UserService;
 import com.example.translationsystembackend.utils.LoginUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -24,10 +26,10 @@ import java.util.List;
 @RequestMapping("/file")
 public class FileController {
 
-    static final int SLICE_LEN = 0x1000;
-
     @Autowired
     private FileService fileService;
+    @Autowired
+    private SliceService sliceService;
     @Autowired
     private UserService userService;
 
@@ -52,12 +54,17 @@ public class FileController {
             file.setFilename(filename);
             file.setUser(user);
             file.setCost(cost);
+            int id = fileService.createFile(file);
             try {
-                file.setContent(multipartFile.getBytes());
+                InputStream inputStream = multipartFile.getInputStream();
+                int counter = 0;
+                while (inputStream.available() > 0) {
+                    byte[] buffer = inputStream.readNBytes(Slice.SLICE_SIZE);
+                    sliceService.createSlice(counter++, id, buffer);
+                }
             } catch (IOException exception) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
             }
-            fileService.createFile(file);
             return new ResponseEntity<>(file, HttpStatus.OK);
         }
     }
@@ -137,9 +144,9 @@ public class FileController {
     @GetMapping("/download/{id}")
     public void downloadFile(HttpServletRequest request, HttpServletResponse response, @PathVariable("id") int id) throws IOException {
         File file = fileService.getFileById(id);
-        ByteArrayInputStream inputStream = fileService.downloadFile(id);
+        List<Integer> ids = sliceService.getIdsByFile(id);
         String username = request.getHeader(LoginUtil.USERNAME_H);
-        if (file != null && inputStream != null) {
+        if (file != null) {
             synchronized (this) {
                 User user = userService.getUserByUsername(username);
                 User author = userService.getUserByUsername(file.getUser());
@@ -152,10 +159,10 @@ public class FileController {
             }
             response.setHeader("Content-Disposition", String.format("attachment;filename=%s", file.getFilename()));
             response.setContentType("application/octet-stream");
-            response.setContentLength(inputStream.available());
+            response.setContentLength((ids.size() - 1) * Slice.SLICE_SIZE + sliceService.getSlice(ids.get(ids.size() - 1), id).getContent().length);
             OutputStream outputStream = response.getOutputStream();
-            while (inputStream.available() > 0) {
-                outputStream.write(inputStream.readNBytes(SLICE_LEN));
+            for (int i : ids) {
+                outputStream.write(sliceService.getSlice(i, id).getContent());
             }
             outputStream.close();
         }
@@ -171,7 +178,7 @@ public class FileController {
      * <p>更新文件，采用put方法上传文件值。如果不为作者或者无写权限则返回401错误，若读取失败返回406错误，成功则返回更新后的文件。</p>
      */
     @PutMapping("/")
-    public ResponseEntity<File> updateFile(HttpServletRequest request, @RequestParam("cost") int cost, @RequestParam(value = "content", required = false) MultipartFile multipartFile, @RequestParam("id") int id) {
+    public ResponseEntity<File> updateFile(HttpServletRequest request, @RequestParam("cost") int cost, @RequestParam(value = "content", required = false) MultipartFile multipartFile, @RequestParam("id") int id) throws IOException {
         String username = request.getHeader(LoginUtil.USERNAME_H);
         File file = fileService.getFileById(id);
         if (file.getUser().equals(username)) {
@@ -179,10 +186,12 @@ public class FileController {
                 file.setCost(cost);
             }
             if (multipartFile != null) {
-                try {
-                    file.setContent(multipartFile.getBytes());
-                } catch (IOException e) {
-                    return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
+                sliceService.deleteSliceByFile(id);
+                int counter = 0;
+                InputStream inputStream = multipartFile.getInputStream();
+                while (inputStream.available() > 0) {
+                    byte[] buffer = inputStream.readNBytes(Slice.SLICE_SIZE);
+                    sliceService.createSlice(counter++, id, buffer);
                 }
             }
             fileService.updateFile(file);

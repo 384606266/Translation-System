@@ -11,6 +11,5 @@ public class File implements Serializable {
     private String filename;
     private String user;
     private int cost;
-    private byte[] content;
 
 }

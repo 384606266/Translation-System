@@ -1,5 +1,3 @@
-CREATE DATABASE IF NOT EXISTS YTSL;
-use YTSL; 
 CREATE TABLE IF NOT EXISTS user
 (
     username        varchar(64)  NOT NULL,
@@ -18,7 +16,15 @@ CREATE TABLE IF NOT EXISTS file
     filename varchar(64)                 NOT NULL,
     user     varchar(64)                 NOT NULL,
     cost     int unsigned                NOT NULL,
-    content  LongBlob,
     PRIMARY KEY (id),
     FOREIGN KEY (user) REFERENCES user (username)
+);
+
+CREATE TABLE IF NOT EXISTS slice
+(
+    id      int unsigned        NOT NULL,
+    file    int unsigned        NOT NULL,
+    content blob NOT NULL,
+    PRIMARY KEY (id, file),
+    FOREIGN KEY (file) REFERENCES file (id)
 );

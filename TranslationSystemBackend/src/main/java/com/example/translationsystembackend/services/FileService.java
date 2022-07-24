@@ -5,7 +5,6 @@ import com.example.translationsystembackend.mappers.FileMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
@@ -14,12 +13,12 @@ public class FileService {
     @Resource
     private FileMapper fileMapper;
 
-    public void createFile(File file) {
-        fileMapper.createFile(file.getFilename(), file.getUser(), file.getCost(), file.getContent());
+    public int createFile(File file) {
+        return fileMapper.createFile(file.getFilename(), file.getUser(), file.getCost());
     }
 
-    public void createFile(String filename, String user, int cost, byte[] content) {
-        fileMapper.createFile(filename, user, cost, content);
+    public int createFile(String filename, String user, int cost) {
+        return fileMapper.createFile(filename, user, cost);
     }
 
     public void deleteFile(int id) {
@@ -46,16 +45,12 @@ public class FileService {
         return fileMapper.getFileByUser(user);
     }
 
-    public ByteArrayInputStream downloadFile(int id) {
-        return fileMapper.downloadFile(id);
-    }
-
-    public void updateFile(int value, byte[] content, int id) {
-        fileMapper.updateFile(value, content, id);
+    public void updateFile(int value, int id) {
+        fileMapper.updateFile(value, id);
     }
 
     public void updateFile(File file) {
-        updateFile(file.getCost(), file.getContent(), file.getId());
+        updateFile(file.getCost(), file.getId());
     }
 
 }
