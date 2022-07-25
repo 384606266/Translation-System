@@ -3,7 +3,6 @@ package com.example.translationsystembackend.mappers;
 import com.example.translationsystembackend.entities.File;
 import org.apache.ibatis.annotations.*;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 
@@ -11,7 +10,8 @@ import java.util.List;
 public interface FileMapper {
 
     @Insert("INSERT INTO file(filename, user, cost) VALUES(#{filename}, #{user}, #{cost});")
-    int createFile(@Param("filename") String filename, @Param("user") String user, @Param("cost") int cost);
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    void createFile(File file);
 
     @Delete("DELETE FROM file WHERE id=#{id};")
     void deleteFile(@Param("id") int id);

@@ -14,11 +14,17 @@ public class FileService {
     private FileMapper fileMapper;
 
     public int createFile(File file) {
-        return fileMapper.createFile(file.getFilename(), file.getUser(), file.getCost());
+        fileMapper.createFile(file);
+        return file.getId();
     }
 
     public int createFile(String filename, String user, int cost) {
-        return fileMapper.createFile(filename, user, cost);
+        File file = new File();
+        file.setFilename(filename);
+        file.setUser(user);
+        file.setCost(cost);
+        fileMapper.createFile(file);
+        return file.getId();
     }
 
     public void deleteFile(int id) {
