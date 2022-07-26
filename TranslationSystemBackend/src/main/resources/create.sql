@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS file
     cost     int unsigned                NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (user) REFERENCES user (username)
-);
+)character set = utf8;
 
 CREATE TABLE IF NOT EXISTS slice
 (
