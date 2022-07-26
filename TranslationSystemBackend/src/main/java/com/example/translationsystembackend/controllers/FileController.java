@@ -5,6 +5,7 @@ import com.example.translationsystembackend.entities.Slice;
 import com.example.translationsystembackend.entities.User;
 import com.example.translationsystembackend.exceptions.IllegalLoginStatusException;
 import com.example.translationsystembackend.exceptions.NoUserException;
+import com.example.translationsystembackend.interceptors.PassToken;
 import com.example.translationsystembackend.services.FileService;
 import com.example.translationsystembackend.services.SliceService;
 import com.example.translationsystembackend.services.UserService;
@@ -21,10 +22,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/file")
 public class FileController {
+
+    private final ConcurrentHashMap<String, Integer> tokensMap = new ConcurrentHashMap<>();
 
     @Autowired
     private FileService fileService;
@@ -134,37 +138,58 @@ public class FileController {
     }
 
     /**
-     * @param request  请求
+     * @param request 请求对象
+     * @param id      文件号
+     * @return 随机生成的token
+     *
+     * <p>获取文件的下载资格，随机为用户生成一个下载用的token号。</p>
+     */
+    @GetMapping("/token/{id}")
+    public ResponseEntity<String> getToken(HttpServletRequest request, @PathVariable("id") int id) {
+        String token = LoginUtil.getRandomToken();
+        tokensMap.put(token, id);
+        File file = fileService.getFileById(id);
+        String username = request.getHeader(LoginUtil.USERNAME_H);
+        synchronized (this) {
+            User user = userService.getUserByUsername(username);
+            User author = userService.getUserByUsername(file.getUser());
+            if (user.getPoints() >= file.getCost() && !username.equals(file.getUser())) {
+                user.setPoints(user.getPoints() - file.getCost());
+                author.setPoints(author.getPoints() + file.getCost());
+                userService.updateUserByUsername(user);
+                userService.updateUserByUsername(author);
+            }
+        }
+        return new ResponseEntity<>(token, HttpStatus.OK);
+    }
+
+    /**
      * @param response 响应
-     * @param id       文件号
+     * @param token    一次性下载权证
      * @throws IOException 获取输出流失败抛出错误
      *
-     *                     <p>get方法，获取指定的文件内容。</p>
+     *                     <p>get方法，不校验登录状态，传入参数为一次性生成的token，获取指定的文件内容。</p>
      */
-    @GetMapping("/download/{id}")
-    public void downloadFile(HttpServletRequest request, HttpServletResponse response, @PathVariable("id") int id) throws IOException {
-        File file = fileService.getFileById(id);
-        List<Integer> ids = sliceService.getIdsByFile(id);
-        String username = request.getHeader(LoginUtil.USERNAME_H);
-        if (file != null) {
-            synchronized (this) {
-                User user = userService.getUserByUsername(username);
-                User author = userService.getUserByUsername(file.getUser());
-                if (user.getPoints() >= file.getCost() && !username.equals(file.getUser())) {
-                    user.setPoints(user.getPoints() - file.getCost());
-                    author.setPoints(author.getPoints() + file.getCost());
-                    userService.updateUserByUsername(user);
-                    userService.updateUserByUsername(author);
+    @PassToken
+    @GetMapping("/download/{token}")
+    public void downloadFile(HttpServletResponse response, @PathVariable("token") String token) throws IOException {
+        Integer id = tokensMap.get(token);
+        if (id != null) {
+            tokensMap.remove(token);
+            File file = fileService.getFileById(id);
+            List<Integer> ids = sliceService.getIdsByFile(id);
+            if (file != null) {
+                response.setHeader("Content-Disposition", String.format("attachment;filename=%s", file.getFilename()));
+                response.setContentType("application/octet-stream");
+                response.setContentLength(ids.size() > 0 ? ((ids.size() - 1) * Slice.SLICE_SIZE + sliceService.getSlice(ids.get(ids.size() - 1), id).getContent().length) : 0);
+                OutputStream outputStream = response.getOutputStream();
+                for (int i : ids) {
+                    outputStream.write(sliceService.getSlice(i, id).getContent());
                 }
+                outputStream.close();
             }
-            response.setHeader("Content-Disposition", String.format("attachment;filename=%s", file.getFilename()));
-            response.setContentType("application/octet-stream");
-            response.setContentLength((ids.size() - 1) * Slice.SLICE_SIZE + sliceService.getSlice(ids.get(ids.size() - 1), id).getContent().length);
-            OutputStream outputStream = response.getOutputStream();
-            for (int i : ids) {
-                outputStream.write(sliceService.getSlice(i, id).getContent());
-            }
-            outputStream.close();
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 

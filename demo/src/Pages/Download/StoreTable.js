@@ -103,22 +103,18 @@ class StoreTable extends React.Component {
         for (let each of param) {
             let id = each.id;
             let filename = each.filename;
-            axios.get(API_URL + "/file/download/" + id, {
+            axios.get(API_URL + "/file/token/" + id, {
                 headers: {
                     Username: localStorage.getItem("username"), Token: localStorage.getItem("token"),
                 }, responseType: "blob",
             }).then((response) => {
                 if (response.status === 200) {
-                    this.setState({
-                        //直接扣除积分，不需重新刷新界面
-                        points: this.state.points - each.cost,
+                    response.data.text().then((token) => {
+                        let a = document.createElement("a");
+                        a.download = filename;
+                        a.href = API_URL + "/file/download/" + token;
+                        a.click();
                     });
-                    let blob = new Blob([response.data]);
-                    let blobUrl = window.URL.createObjectURL(blob);
-                    let a = document.createElement("a");
-                    a.download = filename;
-                    a.href = blobUrl;
-                    a.click();
                 } else {
                     message.error("下载文件" + filename + "失败");
                 }

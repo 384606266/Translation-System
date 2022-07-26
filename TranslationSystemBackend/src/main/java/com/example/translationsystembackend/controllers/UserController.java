@@ -39,7 +39,7 @@ public class UserController {
             user.setUsername(username);
             user.setPasswordDigest(UserUtil.hashPassword(password));
             user.setStatus(0);
-            user.setPoints(0);
+            user.setPoints(User.DEFAULT_POINTS);
             user.setCreated(new Date());
             user.setLastLogin(new Date());
             user.setToken(LoginUtil.getRandomToken());
